@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intercambio CREA TL2 — 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f1ec;--surface:#fff;--surface2:#ede9e1;--border:#dbd6cc;
+  --text:#2b2925;--muted:#7a7266;
+  --agro:#456b4f;--agro-bg:#e7f1ea;
+  --gan:#7a5230;--gan-bg:#f5ebe2;
+  --fin:#305a7a;--fin-bg:#e2edf5;
+  --tbo:#5a6b40;--tbo-bg:#edf1e4;
+  --inv:#6b5a30;--inv-bg:#f5f0e2;
+  --oth:#5f4a7a;--oth-bg:#ece6f4;
+  --tag:#e2ddd6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
+header{background:#211e1a;color:#fff;padding:22px 28px 18px;}
+header h1{font-size:19px;font-weight:600;letter-spacing:-.3px;}
+header p{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;font-weight:300;}
+.month-bar{background:#2d2925;padding:0 28px;display:flex;border-bottom:1px solid rgba(255,255,255,.08);}
+.m-btn{padding:11px 20px;cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);border-bottom:3px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;}
+.m-btn:hover{color:rgba(255,255,255,.8);}
+.m-btn.active{color:#fff;border-bottom-color:#c9a76a;}
+.m-btn .cnt{font-size:11px;font-family:'IBM Plex Mono',monospace;background:rgba(255,255,255,.12);border-radius:4px;padding:1px 6px;margin-left:6px;}
+.m-btn.active .cnt{background:rgba(201,167,106,.25);color:#c9a76a;}
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;}
+.t-btn{padding:12px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;user-select:none;background:none;border-top:none;border-left:none;border-right:none;}
+.t-btn:hover{color:var(--text);}
+.t-btn.active{color:var(--text);border-bottom-color:var(--text);}
+.t-btn .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.container{max-width:1100px;margin:0 auto;padding:24px 28px 60px;}
+.m-panel{display:none;}.m-panel.active{display:block;}
+.t-panel{display:none;}.t-panel.active{display:block;animation:fadeUp .18s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.card.full{grid-column:1/-1;}
+.card.agro{border-left:4px solid var(--agro);}
+.card.gan{border-left:4px solid var(--gan);}
+.card.fin{border-left:4px solid var(--fin);}
+.card.tbo{border-left:4px solid var(--tbo);}
+.card.inv{border-left:4px solid var(--inv);}
+.card.oth{border-left:4px solid var(--oth);}
+.card-head{padding:10px 15px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);cursor:pointer;position:relative;}
+.card-head::after{content:'⤢';position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.35;}
+.card-head:hover::after{opacity:.7;}
+.card.agro .card-head{background:var(--agro-bg);color:var(--agro);}
+.card.gan .card-head{background:var(--gan-bg);color:var(--gan);}
+.card.fin .card-head{background:var(--fin-bg);color:var(--fin);}
+.card.tbo .card-head{background:var(--tbo-bg);color:var(--tbo);}
+.card.inv .card-head{background:var(--inv-bg);color:var(--inv);}
+.card.oth .card-head{background:var(--oth-bg);color:var(--oth);}
+.erow{padding:10px 15px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:68px 1fr;gap:10px;align-items:start;font-size:13px;}
+.erow:last-child{border-bottom:none;}
+.etag{display:inline-flex;align-items:center;justify-content:center;background:var(--tag);border-radius:5px;font-size:11px;font-weight:700;padding:2px 6px;white-space:nowrap;letter-spacing:.3px;}
+.erow .val{line-height:1.6;}
+.cb,.fb{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-weight:600;font-size:12px;margin-bottom:4px;}
+.cb.up,.fb.ok{background:#e7f1ea;color:#2d6040;}
+.cb.hold,.fb.reg{background:#fef9e7;color:#7d6a00;}
+.cb.dn,.fb.mal{background:#fdecea;color:#8b1a1a;}
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px;margin-bottom:18px;}
+.emp-btn{background:var(--surface);border:2px solid var(--border);border-radius:9px;padding:10px 13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:9px;user-select:none;}
+.emp-btn:hover{border-color:#b0a898;}
+.emp-btn.active{border-color:var(--text);background:var(--text);color:#fff;}
+.emp-btn.active .emp-sub{color:rgba(255,255,255,.5);}
+.emp-ico{width:32px;height:32px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0;}
+.emp-btn.active .emp-ico{background:rgba(255,255,255,.15);color:#fff;}
+.emp-nm{font-weight:600;font-size:13px;}
+.emp-sub{font-size:10px;color:var(--muted);}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+@media(max-width:600px){.d-grid{grid-template-columns:1fr;}}
+.d-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.d-item.full{grid-column:1/-1;}
+.d-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.pill{padding:2px 6px;border-radius:99px;font-size:10px;font-weight:600;text-transform:uppercase;}
+.pill.agro{background:var(--agro-bg);color:var(--agro);}
+.pill.gan{background:var(--gan-bg);color:var(--gan);}
+.pill.fin{background:var(--fin-bg);color:var(--fin);}
+.pill.tbo{background:var(--tbo-bg);color:var(--tbo);}
+.pill.inv{background:var(--inv-bg);color:var(--inv);}
+.pill.oth{background:var(--oth-bg);color:var(--oth);}
+.d-val{font-size:13px;line-height:1.6;}
+.tbo-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tbo-table th{background:var(--tbo-bg);color:var(--tbo);font-weight:600;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;padding:7px 11px;text-align:right;border-bottom:2px solid var(--border);}
+.tbo-table th:first-child{text-align:left;}
+.tbo-table td{padding:7px 11px;border-bottom:1px solid var(--border);text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+.tbo-table td:first-child{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-align:left;font-size:13px;}
+.tbo-table tr:last-child td{border-bottom:none;}
+.tbo-table .yr-last{background:#f7f4ef;font-weight:600;}
+.tbo-table .na{color:var(--muted);font-style:italic;}
+.dp{color:#2d6040;font-size:10.5px;}.dn2{color:#8b1a1a;font-size:10.5px;}
+.tbo-sec{margin-bottom:20px;}.tbo-sec:last-child{margin-bottom:0;}
+.tbo-sec-title{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--tbo);margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(26,22,18,.75);backdrop-filter:blur(4px);padding:14px;overflow-y:auto;}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center;animation:fadeUp .15s ease;}
+.modal{background:var(--surface);border-radius:13px;width:100%;max-width:740px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;}
+.modal-close{width:26px;height:26px;border-radius:50%;border:none;background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--border);}
+.modal-body{overflow-x:auto;}
+.modal-body .tbo-table td,.modal-body .tbo-table th{padding:8px 13px;font-size:12.5px;}
+@media(max-width:680px){
+  .container{padding:16px 14px 50px;}
+  .month-bar,.tab-bar{padding:0 14px;}
+  header{padding:18px 14px 14px;}
+  .grid{grid-template-columns:1fr;}
+  .emp-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Intercambio CREA TL2 — 2026</h1>
+  <p>Resumen de respuestas al formulario mensual de novedades</p>
+</header>
+
+<div class="month-bar">
+  <button class="m-btn" onclick="switchMonth('feb',this)">Febrero 2026 <span class="cnt">11</span></button>
+  <button class="m-btn active" onclick="switchMonth('mar',this)">Marzo 2026 <span class="cnt">13</span></button>
+</div>
+
+<div class="tab-bar">
+  <button class="t-btn active" onclick="switchTab('resumen',this)"><span class="dot" style="background:#999"></span>Resumen</button>
+  <button class="t-btn" onclick="switchTab('empresa',this)"><span class="dot" style="background:#999"></span>Por empresa</button>
+  <button class="t-btn" onclick="switchTab('agro',this)"><span class="dot" style="background:var(--agro)"></span>Agrícola</button>
+  <button class="t-btn" onclick="switchTab('gan',this)"><span class="dot" style="background:var(--gan)"></span>Ganadería</button>
+  <button class="t-btn" onclick="switchTab('tbo',this)"><span class="dot" style="background:var(--tbo)"></span>Tambo</button>
+  <button class="t-btn" onclick="switchTab('fin',this)"><span class="dot" style="background:var(--fin)"></span>Financiero</button>
+  <button class="t-btn" onclick="switchTab('inv',this)"><span class="dot" style="background:var(--inv)"></span>Inversiones</button>
+</div>
+
+<div class="container">
+  <div class="m-panel" id="m-feb">
+    <div class="t-panel active" id="feb-resumen"></div>
+    <div class="t-panel" id="feb-empresa"></div>
+    <div class="t-panel" id="feb-agro"></div>
+    <div class="t-panel" id="feb-gan"></div>
+    <div class="t-panel" id="feb-tbo"></div>
+    <div class="t-panel" id="feb-fin"></div>
+    <div class="t-panel" id="feb-inv"></div>
+  </div>
+  <div class="m-panel active" id="m-mar">
+    <div class="t-panel active" id="mar-resumen"></div>
+    <div class="t-panel" id="mar-empresa"></div>
+    <div class="t-panel" id="mar-agro"></div>
+    <div class="t-panel" id="mar-gan"></div>
+    <div class="t-panel" id="mar-tbo"></div>
+    <div class="t-panel" id="mar-fin"></div>
+    <div class="t-panel" id="mar-inv"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hd" id="modal-hd">
+      <span id="modal-title"></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const D = {
+feb: {
+ empresas: ['C4','LEL','MBSA','GdA y Trap','OASA','ENDSA','RyJLC','Lepoma','SH','AMSA','IWSA'],
+ temas: {
+  'C4':        {tec:'Buena convocatoria a la intermedia de engorde, esta bueno.'},
+  'MBSA':      {emp:'Preocupado por valor del dolar, convendrá vender y pasar a tasa'},
+  'GdA y Trap':{tec:'Experiencias (si las hay) de aplicaciones de Paraquat con drones para secar girasol. Y si las hay cuando y cuanto adelanta?\nLotes con mucho yuyo colorado en soja, es la solución el maíz Enlist? O ir con Calisto en la próxima campaña?'},
+  'RyJLC':     {tec:'tenemos varios lotes de soja con mucho yuyo colorado. uds?'},
+  'Lepoma':    {emp:'Comercial en DOS', tec:'Post cosecha de girasol. Cuanto le dan antes del primer trabajo. Rolo o barbecho. Empiezo con las actividades de vocal en marzo porque el cipi se va de vacaciones. Agenda complicada y me enchufaron la asamblea zonal. Ingeniero que les haga el calculo electrico. Me maneje con candela marco y baje la boleta a la mitad sin cambiar el trafo. Me jugaba en contra la reserva de potencia. Como les comente tuve problemas con el banco y las tarjetas. Claramente estamos todos expuestos si el problema lo tuve con una tarjeta que hace casi dos años que tengo guardada en una caja de seguridad. No creo que uno tenga mas soluciones que mirar constantemente los montos y consumos, también se puede poner topes a los consumos.\n\nDurante los últimos 15 días estuve trabajando en varios sistemas de automatización de control de documentos. Desde facturas a resúmenes de tarjeta.. viene muy bien.'},
+  'IWSA':      {emp:'Los que consideran que el negocio de cría de hacienda o tenencia de vacas no sirve para nada, que opinan de la situación actual ¿Es pasajera? ¿Se acomoda el mercado ganadero?', inst:'¿Que opinan del coordinador?'},
+ },
+ gruesa: {
+  'C4':        'Bien necesitando agua. Se empezaron a marcar las sojas en diferentes partes.',
+  'LEL':       'Estado es bueno a muy bueno, las lomas han sufrido últimamente por la falta de lluvias importantes. El resto está muy bueno. Esta lluvia vino bárbaro para los maíces tardíos, 2da y soja 2da. Los girasoles se los ve muy lindos calculo que van estar en 12/15 días. Maíz temprano se hizo 25 ha de maíz húmedo con rinde muy bueno 10600 pasado a seco.',
+  'MBSA':      'Con la lluvia de ayer parece q 3 en gsol 3.5 soja y 7.5 en maiz podria ser',
+  'GdA y Trap':'En ambas empresas girasoles a entregarse, pero les falta una semana. Maíces tanto en Golpe de Agua como en Trapalcó el dato mas cierto que el temprano dio 32 a 33 ton de MV (Z8 de Natal Seed). Sojas reacomodándose con la lluvia de ayer (42 mm), hubo varios tratamientos por arañuela y comenzamos con algunos para chinche, sigo con los rindes presupuestados 3,5 ton/ha la de primera, y 1,8 a 2,0 ton por ha',
+  'OASA':      'Girasol, bueno a muy bueno rinde 2,8 a 3 tn. Maiz primera muy bueno 9 a 10 tn. Maiz tardio, bueno esperando lluvia. Soja muy buena rinde 3,7 a 4 tn. Justos de agua en huelen, ultima lluvia 2 mm',
+  'ENDSA':     'En general buenos, cultivos de primera lomas afectadas por falta de agua, nos estaría faltando una lluvia de 50 mm para estar tranquilos con las sojas y maíz tardío. Rinde girasol 2,8/3 maiz1 8.5 soja 3.5/3.8. Maíz tardío todavía falta',
+  'RyJLC':     'Todo muy bueno, salvo algun girasol en algun lote fulero o algun maiz en lote sobre verdeo pisoteados! Cosechando maiz humedo rinde aprox llevado a seco 8000 kg y quizas mejore en otros lotes q parecen mejores',
+  'Lepoma':    'En general buenos, zonas de maíz y soja de primera mas afectadas por la sequia, rinde esperado. Girasol 2,8/3. Maíz 8,5. Soja 3,8. Maíz tardío y soja de segunda todavía no me animo a ponerle numero, hoy mejor perspectiva por lluvias fin de semana',
+  'SH':        'Muy buenos en general. 2300 kgs netos gir confitero, 8500 kgs maiz temprano, 7500 kgs maiz tardio, Soja 1 temprana 3800 kilos, Soja 1 tardia 3200 kilos, Soja 2 2800 kilos',
+  'AMSA':      'Los cultivos se ven buenos, los girasoles todavía atrasados porque se sembraron unos días tarde y de ciclo largo, sojas y maíces variados entre muy buenos y algunos lotes regulares, pero en general mucho mejor de lo esperado al ser un año para nosotros muy complicado en la siembra.',
+  'IWSA':      'Los cultivos se ven bien, faltó un poco de agua en el verano. Va a pegar un poco en rinde. El silo de maíz anduvo bien con un lote de 48 tons/ha y otro de 40 tons/ha. Promedio 44 tons ha',
+ },
+ cc: {
+  'C4':        'Vicia y centeno segun ambiente',
+  'LEL':       'Vamos usar centeno. Vamos hacer 500 ha entre algo más orientado a verdeo y otro solo para cobertura. Muy satisfechos con la cobertura que hicimos en la Hebe en el campo de tres lomas. Anduvo bárbaro.',
+  'MBSA':      'En cordoba vamos a hacer contornos, este año se volaron un poquito, 250 ha',
+  'GdA y Trap':'Trapalcó SA: 124 ha\nGolpe de Agua SCA: 254 ha\nAmbas de centeno',
+  'OASA':      'Cobertura no, verdeos de avena y centeno sobre girasol.',
+  'ENDSA':     'Se van a realizar verdeos y posiblemente si se hace alguna cobertura sera en un área puntual de loma dentro de los lotes',
+  'RyJLC':     'Planificando hacer mas situaciones y mas has que el año pasado',
+  'Lepoma':    'La idea es hacer algo de centeno en las partes mas altas de los lotes para tratar de disminuir riesgos de erosión, etc',
+  'SH':        'Aprox 120 has de centeno segun ambientacion y 30 has de vicia',
+  'AMSA':      'La idea es hacer unas 50 hectáreas de centeno. Que puede destinarse a pastoreo o a cobertura depende de las circunstancias.',
+  'IWSA':      'Mucho más que el año anterior. Alrededor de 300 has. Anduvo muy bien la vicia previa a maíz demorado',
+ },
+ comercial: {
+  'C4':        'Girasol 45% vendido u$ 378 promedio de vta. entre comun y oleico\nSoja 27% vendido u$ 315 promedio de venta\nTrigo 70% vendido u$ 194 promedio de venta',
+  'LEL':       'Nos queda algo de maíz, poco. Vendimos algo de trigo y girasol común.',
+  'MBSA':      'Cero de la 24/25, 30 % de gsol 5 de soja y 5 de maiz',
+  'GdA y Trap':'No hay remanente 24-25\nTrapalcó 25-26 vendidos: 85% del trigo (192.5), 60% de la cebada forrajera (193.6), 54% del girasol (358,5), maíz 13% (182.6) y soja 38% (311,5)\nGolpe de Agua 25-26 vendidos: 100% del trigo (191), 100% de la cebada (186), 57% girasol (355,5), maíz 22% (187) y soja 34% (309)',
+  'OASA':      '24-25 nada, nueva campaña 25-26 girasol vendido 330 tn 67% de lo esperado precio 350 dolares. Maiz 600 tn 24% de lo esperado precio 180 dolares, soja 120 tn 16% de lo esperado precio 310 dolares.',
+  'RyJLC':     '3% de soja q no se uso para vacas asiq se vende ahora\n4% de maiz que como estamos pudiendo cosechar humedo el nuevo se vende ese',
+  'SH':        'De la 24-25 se vendio todo lo entregado. Vendimos 150 ton de maiz a un productor local tomando precio de ACA Bahia dispo - 15 uss a retirar de SH.\n\nYa estaba informado soja a 315 uss 150 tons ACA\nMaiz a 185 uss 210 tons ACA',
+  'AMSA':      'De la 24/25 queda girasol (100 tn) y maíz (1300 tn)\nDe la 25/26 está vendido: Cebada 90%. Trigo 54%, Girasol 37%, Soja 28% y Maíz 16%',
+  'IWSA':      'Vendimos todas las existencias de granos antes de cierre de balance. Compramos hacienda',
+ },
+ cria: {
+  'C4':        {est:'Buen estado, comiendo pasturas comenzando a destetar semana proxima', tend:'Crecer o por lo menos recuperar el stock anterior.', cls:'up'},
+  'LEL':       {est:'Se pesó la ternerada, andan en 200kg en promedio. Vamos a salir a ofrecerlos.', tend:'Si logramos sembrar las 70 ha de pastura que tenemos pensado la idea es crecer, veremos que en cuanto y si hay alguna disponibilidad de crédito.', cls:'up'},
+  'MBSA':      {est:'Bien, se destetaron alrededor de 400', tend:'Vendemos toda la invernada y poray capitalizamos unas vaquitas 250 para no comprar a estos valores', cls:'up'},
+  'GdA y Trap':{est:'Buena condición corporal en ambos establecimientos, no hay tactos finales solo de las IATF, comiendo pasturas y llorones', tend:'Crecer', cls:'up'},
+  'OASA':      {tend:'La idea es subir la capitalizacion de vaquillonas ballester, y vacas negocio en don leopoldo', cls:'up'},
+  'ENDSA':     {est:'PBA: Se desteto, siguen comiendo en comedero, se entregan en 15 dias. Todo mejoro de estado, todo comiendo o balanceado o maiz para terminar de engordar en el caso de la vaca.\nSe entrego la recria, muy buen resultado, se solto la cola, y avanza muy bien.\nSALTA: Complicado, no llueve bien voy 270 milimetros a 2 meses que termine la temporada de lluvia. Ya habia tomado la decision de oxigenar con venta (se detalla abajo). El estado es muy bueno gracias a buen pastoreo y aporte de pellet de alfalfa.', tend:'Aumento del 15% en Vaca Cut Preñada, pero disminucion del 20 % de la hacienda general, para quedarme con efectivo para inversion, y porque no tengo campo tampoco.', cls:'up'},
+  'RyJLC':     {est:'Bueno en bajos y llorones y aun no se hizo tacto', tend:'Mantener', cls:'hold'},
+  'SH':        {est:'Estado de la vaca es bueno, por hacerse el destete esta semana. Pasando a un bajo que viene es descanso con bastante agropiro', tend:'Mantener', cls:'hold'},
+  'AMSA':      {est:'Las vacas hoy están sobre campo natural (muy poco pasto y comiendo el último bolsón de silo de la campaña pasada). Racionamos con algo de maíz para mantenerlas. El tacto se va a hacer en las próximas semanas al igual que el destete que la idea es venderlo. Se va a liquidar el total del rodeo de cría existente con la idea de reponer este año con vaca nueva preñada de calidad. Depende la oferta forrajera que podamos lograr será la carga que podremos soportar. Se picaron 24 hectáreas de maíz que rindieron 43.000 kilos de verde. Y vamos a hacer 50 hectareas de centeno y un lote de 40 hectáreas con festuca y agropiro. Ademas de 30 ha de alfalfa para rollos.', cls:'hold'},
+  'IWSA':      {est:'El estado es entre bueno y muy bueno', tend:'Vamos a ir creciendo lentamente para no pasarnos como sucedió los ultimos 3 años', cls:'up'},
+ },
+ cyv: {
+  'C4':        {c:'No hubo', v:'65 machos $6500 180 a 200 kgs\n25 Nov. Overos 394 kgs $4410 (Mercado)'},
+  'MBSA':      {v:'Ofertadas 400 M y H, creeria q pesan 150/160 promedio'},
+  'GdA y Trap':{c:'Trapalcó: 70 terneras a 5.255 $/kg 208 kg con 30 y 60', v:'Trapalcó: MAG 41 novillos 433 kg a 4.400/4450 $/kg (23/01)\nGolpe de Agua: 14 ntos de 361 kg a 4700 $/kg, 10 ntos de 430 kg a 4.400 $/kg\n30 vaquillonas de 303 kg a 4700 o 4800 $/kg, 2 vacas de 505 kg a 3.000 $/kg y 3 MEJ de 283 kg a 4.200 $/kg'},
+  'OASA':      {c:'Norte terneros/as 170 kg 6210 a 60 dias pago', v:'Novillitos 310 kg 4900 pesos 30 y 60 dias'},
+  'ENDSA':     {c:'NOA: 70/30 MyH 5400 de 180 kgs a recibir, se pago a 30 dias de cerrado el negocio. (2 dobles)\nPBA: Vaca cut preñada 1.450.000 a 1.750.000 dependiendo plazo y gastos financieros, parte vino parida.(10%)', v:'Recria NOA, vendi todo a 4850 con hasta 300 kilos, 60% M y 40% H, con entregas diferidas y plazos del negocio del cierre 30/60/90/120, con entrega de promedio a 30 dias del cierre. Se me va a complicar la recompra, analizando alternativas. Debo vaciar el campo,...es mas hubiese querido entregar no bien vendi pero no llegaba a los kilos.'},
+  'RyJLC':     {c:'Vacas vacias 1\n70 terneras a termino de 180 kg x $ 4800 en diciembre\n105 vacas vacias de 437 kg a 2600$\n38 vacas preñadas a 1.600.000', v:'Novillitos ha $ 4430 de 420kg'},
+  'SH':        {c:'No compramos', v:'No vendimos'},
+  'IWSA':      {c:'Compramos vaq de tambo semen sexado y convencional a 5500 lts parición marzo.', v:'Vendimos terneros de cría de 213 a 6200 pesos y ternero holando de 120 kg a 5000 pesos'},
+ },
+ tbo: {
+  'C4':    'En obra agregando los 8 puntos mas de ordeñe e instalando pasteurizador',
+ },
+ comentarios: {
+  'OASA':  'Evaluando salir de hacienda en salta para compra de tierra',
+  'RyJLC': 'Alguno hizo inversiones en agua para hacienda? Que tipo de tanque conviene poner y bebidas? Tanque australiano o tanque de plastico?',
+ },
+ fin: {
+  'C4':        {sit:'Bien', fin:'Nada', cls:'ok'},
+  'LEL':       {sit:'Situación es buena.', fin:'Ninguno.', cls:'ok'},
+  'MBSA':      {sit:'Buena', fin:'Seguimos contado y o canje', cls:'ok'},
+  'GdA y Trap':{sit:'Lo habitual, bien Trapalcó, ajustada y compleja Golpe de Agua', fin:'Golpe de Agua: venta de echeqs; siguiendo el crédito del Banco Bice por 210 millones para la compra de vaquillonas', cls:'reg'},
+  'OASA':      {sit:'Buena', fin:'Ninguna', cls:'ok'},
+  'ENDSA':     {sit:'OPTIMA, pq vendi hacienda y cobre capitalización de la hacienda.', fin:'Negociando cheques de 28 a 36 % cuando es necesario.\nTome dólares al 7%, hasta empalmar con los vencimientos de la hacienda por ahora salio barbaro, a medida que vencen cubro, y asi negocio menos.', cls:'ok'},
+  'RyJLC':     {sit:'Buena', fin:'Nada', cls:'ok'},
+  'Lepoma':    {sit:'Bien pero seguro me voy a compicar los proximos 15 30 dias por el tema del sisa', fin:'Ninguna. Mejore con el manejo de saldos. Agregue cocos y funciona mejor que IOL; pero la pagina y el sistema es horrendo. Te asignan un encargado y podes operar por teléfono. Maneja Opciones de granos y algunas cosas mas. Operatoria muy ágil cuando uno sabe que quiere.', cls:'reg'},
+  'SH':        {sit:'Ajustada', cls:'reg'},
+  'AMSA':      {sit:'Buena, hay liquidez.', fin:'Nada', cls:'ok'},
+  'IWSA':      {sit:'Es un poco justa antes de la cosecha. Pero venimos bien', fin:'Estamos viendo de tomar una financiación chica en dolares al 9% por un año', cls:'reg'},
+ },
+ inver: {
+  'C4':        'Balanza individual farmequip ($5.5 mill) y evaluando balanza Gallagher full ya con todo lo electronico (u$6900 no confirmado viendo opciones)',
+  'LEL':       'Vamos a empezar analizar el cambio de uno de los tractores por uno con más potencia. Vender el 230 por un tractor 270 CC o por ahi. Veremos que sale en expoagro. La otra inversión es en más vientres.',
+  'MBSA':      'Firmamos la compra de un campo 640 ha girodias y la venta de alvear 320 (210 sembrables)',
+  'GdA y Trap':'Trapalcó: analizando molino extrusor de plásticos y máquina para hacer postes y varillas plásticas',
+  'OASA':      'Esperando expoagro, chimango, tolva semillera, desmalezadora y biendo tractor sin apuro, casilla de operaciones con balanza para huelen',
+  'ENDSA':     'Compre la balanza de camion, ya se instalo, faltan detalles\nCompre 2 casillas de operaciones y balanzas y baston\nMe resta armar el equipo para la pastura de corte con cambio de tractor x uno viejo y segadora.',
+  'RyJLC':     'Llegaron las importaciones! Viendo de importar una motoniveladora\nPreparando para la expoagro: reemplazar tractores con 15000 hs, reemplazar embolsadora y monotolva\nComprar carreton para la retro',
+  'Lepoma':    'Ninguna',
+  'SH':        'Se compraron 2 tolvas de 10tt Impagro con entrega de 12 cheques',
+  'AMSA':      'Se cerró la compra de 16 hectáreas, de una parte de un lote que alquilamos y se cambio el maicero por otro allochis y la Toyota de Diego por una Amarok.',
+  'IWSA':      'Estamos dando vueltas en realizar la celda para el tambo y el cambio de bretes. En total son unos 150 millones',
+ },
+ datos:[
+  {t:'Lt / VO / día', cols:['AL','LA','LP','C4'],
+   rows:[[2021,26.6,32.5,39.6,30.6],[2022,26.9,29.4,38.4,32.0],[2023,31.5,28.2,41.3,35.8],[2024,30.5,32.6,40.3,32.5],[2025,33.7,35.1,40.6,36.1],[2026,32.9,null,38.9,35.9]]},
+  {t:'Vacas en ordeñe (VO)', cols:['AL','LA','LP','C4'],
+   rows:[[2021,615,526,1972,465],[2022,675,490,2175,428],[2023,746,462,2443,525],[2024,706,359,2467,515],[2025,822,373,2561,587],[2026,871,null,3046,582]]},
+  {t:'Litros diarios totales', cols:['AL','LA','LP','C4'],
+   rows:[[2021,16347,17096,78030,14238],[2022,18128,14414,83501,13673],[2023,23511,13048,100946,18362],[2024,21526,11712,99469,16732],[2025,27700,13100,104001,21174],[2026,28663,null,118550,20902]]},
+ ],
+},
+
+mar: {
+ empresas: ['MBSA','C4','OASA','SH','LEL','GdA y Trap','ENDSA','Lepoma','ENT','AL','IWSA','AMSA','RyJLC'],
+ temas: {
+  'MBSA':      {emp:'Tengo la sensación de q los nros empiezan a apretar, imagino con alquiler de 14/15 qq'},
+  'OASA':      {emp:'En la ultima semana me encontre con la sorpresa que me llamaron varias empresan por alquiler agricola y mani', otro:'Veo mucho interes en alquiler de campo, ya tengo varios llamados en busca de superficie. Cual es el valor que no justifica hacer la agricultura propia?'},
+  'LEL':       {emp:'Vamos a tomar un crédito en dólares para la renovación de un tractor. Y pareciera que hoy lo único créditos interesante son en dólares. Pero siempre da miedo endeudarse en dólares. Para eso no es nada grave. Ya que tenemos los dólares. Pero tomarían deuda en dólares para compra de insumos o compra de vacas. Como negocio? Qué puntos tendrían en cuenta y cuáles podrían ser sus beneficios. Estamos pensando para el año que viene incorporar la inoculación de girasol con un producto de upl y también otro de Stoller. Al parecer mejora mucho la rapidez y instalación del cultivo con un costo bajo.\nTambién volver a analizar la fertilización de urea en los girasoles, hay muchas empresas que lo hacen y con resultados positivos.'},
+  'ENDSA':     {tec:'Viendo de reconfigurar estrategia de herbicidas y uso de enlist para mejorar el control de malezas resistente sobre todo colorado'},
+  'Lepoma':    {emp:'Taller liquidaciones', tec:'Estrategia uso selectiva: 1. Reseteo cobertura total primer pasada o 2. directo selectiva.\n\nVer la posibilidad de una recorrida de cosecha soja maíz, como la de girasol.\n\nAuditoria fumigadoras. Muy buena la reunión de cosecha. ME LA RE PUSO CIPI..'},
+  'ENT':       {emp:'Precios de insumos.', tec:'Aplicacion selectiva: muchas opciones (se ve que hay negocio y que la cosa va por ahi). Muchas en veremos. Que pasa con el drone y la camara multiespectral y la aplicacion selectiva desde ahi?'},
+  'RyJLC':     {tec:'Comentarios de capacitacion cosecha de girasol'},
+ },
+ gruesa: {
+  'MBSA':      'Gsol terminado en LR 3,1 ahora en garre parece también de 3, no se calidad todavía',
+  'C4':        'Terminado el girasol, 4050 Kg Syn 3969 y 3570 Kg Syn 3979 hol.',
+  'OASA':      '95% girasol a 2900 kilos, todo vendido 360 u$s',
+  'SH':        'Gir.Conf. 100% Cosechado 19.3qq',
+  'LEL':       'Hicimos 492 ha de 628ha (parte de esas ha no son nuestra que hacemos a porcentaje). Rendimiento mejor fue 3068 kg/ha la estrella, 2600 el socorro y 2200 la Hebe tres lomas. Nos quedan dos lotes uno en la estrella y otro campo pegado Puleo. El de la estrella muy bueno, Puleo más flojo. Me gustó más 50 mil semillas por ha que 60 mil (comentario). No tenemos calidad. Cada vez más difícil regular la cosechadora con esos girasoles caña verde, cabeza parte verde, hojas y grano súper seco.',
+  'GdA y Trap':'Trapalcó: terminada 2.850 kg sobre 570 ha\nGolpe de Agua: 3.350 kg sobre 450 ha (faltan cosechar 150 ha)',
+  'ENDSA':     '100% Cosechado - S/380 has - 3075 kilos promedio netos de humedad. A hoy hay 50% con analisis, el factor es 120,83',
+  'Lepoma':    'Finalizado 3500',
+  'ENT':       '75% cosechado, 3400 kg/ha prom (3200-3700)',
+  'AL':        '100% cosechado 3288 kg/ha s/189 hectáreas (119 factur)',
+  'IWSA':      'Se cosechó el 100% del girasol. Rendimiento 3.818 Tn/Ht',
+  'AMSA':      'Va un 55% de superficie cosechada. El rendimiento es muy variable porque hubo lotes que fueron afectados por viento y piedra. Hubo de 2200 con 30% de daño y otros sin daño 2750. Ahora se esta haciendo uno que está muy lindo, pero se tuvo que abandonar porque le faltaban unos dias de entrega. La calidad de humedad bien, y la mat ext lo maximo que tuvimos fue un camion con 6% (cabeceras) y un par con 4.5%. El resto todo debajo de 3%. No tenemos dato de grasa ni acidez.',
+  'RyJLC':     '800 has cosechadas rinde 3300 aprox, seria 60% avance. Controlando cuerpos extraños en el lote!!\n600 has cosechadas de maiz humedo, 70% avance. 12 tn humedo con 27%, seco da 10 tn aprox',
+ },
+ cc: {
+  'MBSA':      'Bastante imagino, centeno',
+  'C4':        'Vicia / centeno en sj 30 has',
+  'OASA':      'Verdeos doble proposito 175 hectreas sobre girasol',
+  'SH':        'Centeno 120has\nVicia 30has',
+  'LEL':       'Todo centeno, parte va ser verdeo y luego cultivo de cosecha. Y otra parte solo cobertura. Vamos hacer 485 ha',
+  'GdA y Trap':'Golpe de Agua: 201 ha de centeno, Trapalcó S.A.: 124 ha centeno',
+  'ENDSA':     '128 ha centeno sobre maiz primera con drone voleado (ya sembrado 75 kg/ha), 334 ha de verdeos con sembradora sobre rastrojo de girasol, cobertura 25 ha lomas de un lote rastrojo girasol a sembrar con drone estos dias previo a la pasada de rolo',
+  'Lepoma':    'De 60 a 150. Estamos analizando Vicia y repetir centeno. Tenemos alguna duda con algún lote de fina si hacemos algo antes.',
+  'ENT':       '490 (50% con drone ya sembrado, 50% con sembradora a sembrarse)',
+  'AL':        'Siembro 118 hectáreas de triticale (100 estimo van a silaje, el resto en lomas)',
+  'IWSA':      'Centeno: 100 hts para recuperar bajos (no está definido sembrar algo después)\nCenteno: 70 hts\nCenteno: 100 hts para consumo vacas cría\nVicia: 20 hts',
+  'AMSA':      'Cero %. Solo se hicieron 60 has de un centeno en un lote ganadero, que no entraria en la definicion de cultivo de cobertura o servicio.',
+  'RyJLC':     '900has de centeno. 10% aprox del total',
+ },
+ comercial: {
+  'MBSA':      '40% gsol a 360/70 prom, soja el 10 a 325 y maiz el 10 a 195',
+  'C4':        'Girasol 30% - Trigo 90% - Soja 27%',
+  'OASA':      'Girasol vendido 100%',
+  'SH':        'Mz 150tns a 185 dlrs',
+  'LEL':       'No tengo %. Pero comento lo último que se vendió. Se hizo un canje con trigo a 200 dólares más 9 dólares plus canje con acá. Se vendió 90 tn de girasol a 360+10 con Cargill entrega la porteña. Y vendimos algo de canje soja abril precio papá',
+  'GdA y Trap':'Girasol: 83% Golpe de Agua a 365 U$S y 80% a 367 Trapalcó\nSoja: 35% Golpe de Agua a 310 U$S y 40% Trapalcó al mismo valor',
+  'ENDSA':     'Soja 420 tons a 320 - 27% S/3.5 * 438 has\nMaiz Temprano 1260 tons a 186 - 32% S 4000 tons aprox de prod./Ver silo\nGirasol 600 tons a 330 + 25 sin largo\n60 tons a 350 + 15 puesto en las palmas\n500 tons a fijar por mercado ACA. (Posiblemente fije esta semana)',
+  'Lepoma':    '25-26:\nTrigo 196,5 $ 29,8%\nMaíz 193,8 $ 39,1%\nGirasol 352,6 $ 62,3%\nSoja 307,3 $ 58,6%\nManí 700,0 $ 48,2%\n\n26-27:\nTrigo 390,0 tons 214,2',
+  'IWSA':      'Trigo: 100% vendido\nCebada: 100% vendido\nGirasol: 100% vendido\nMaiz: nada vendido\nSoja: 5% vendido. Forward mayo',
+  'RyJLC':     'Girasol comun 75% vendido y oleico 52% vendido. En general 58% vendido\nSoja 8%\nMaiz 4%',
+ },
+ insumos: {
+  'MBSA':      'Nada pero la idea es comprar todo el glifo y el 24 d y fomesaf y ver q pasa después',
+  'C4':        'Nada por ahora, estaba esperando condiciones de Expo.',
+  'OASA':      'Fertilizante MAP verdeos y semillas de pastura. Saldo de insumos campaña pasada 37mil u$s Agropak',
+  'LEL':       'Compramos 60 tn de map a 898 a retirar de puerto, 30tn de microessential a 1052 puesto en el campo y 30 tn de urea a 619 dólares a retirar de puerto. Miedo a la guerra. Tmb cerré todos los residuales para la campaña que viene de los campos fijos. Y cerré algo más de glifo, control Max, 2000 lt a 5,7. Ya tenía cerrado 5000 lt pago mayo a 5,85. Lo de los insumos se hizo porque teníamos pesos para diversificar inversión y me gustaba el tipo de cambio bajo.',
+  'GdA y Trap':'Glifo granulado La Tijereta, Maíz Pioneer, Gesaprim 90, Dual Gold y Sulfentrazone\nPrecio por orden: 5,55 U$S/kg, 6.40 U$S/kg, 6.20 U$S/l y 17.8 U$S/l\nEl maíz a 115 U$S/bolsa',
+  'ENDSA':     'Analizando por condiciones EXPO',
+  'Lepoma':    'NADA, nos interesa su opinión. Opciones y oportunidades.. cuenten\n\n¿Que opinan del mercado de fertilizantes, que hicieron y que piensan..?\nSubimos un poco la fina y medio que nos arrepintiendo por costos fertilizantes... miramos la planilla de toto y está ahí la cosa... En realidad del primer plan, ya bajamos..\nTirate un margen bruto TOTO, queremos saber.. Pensando en meter vicia para ahorrrrrrrraaar algo en los maíces tardío y "generar cobertura y lugar de anidado y postura a las cotorras y palomas"',
+  'ENT':       'Glifosato',
+  'AL':        'Algo de glifosato',
+  'IWSA':      'Se fijo el precio (no pagado) de todo el fertilizante para verdeos y pasturas. Semillas de verdeos y pasturas (centeno, cebada triticale, agropiro, vicia) comprada. Se compraron agroquimicos varios.\nDe gruesa no se compró nada todavía.',
+  'AMSA':      'Se compro algo de glifosato, algo de harvest more, y nada mas',
+  'RyJLC':     'Se compro todo el glifo (panzer + control max + top + poer plus) + todo 24d + correcto\nDe maiz atrazina + dual gold + ampligo\nDe girasol, autority + clearsol + dual gold + ampligo\nDe soja, autority + ligate + clorimuron + dual gold + heat + cletodim + galant max\nDe fina se compro el fosforo s9',
+ },
+ cria: {
+  'MBSA':      {tend:'Crecer algo', cls:'up'},
+  'C4':        {tend:'Crecer', cls:'up'},
+  'OASA':      {tend:'Llevamos el negocio de vaquillonas a 2500 en huelen, biendo de hacer algo de vaca de negocio salta y don leopoldo', cls:'up'},
+  'SH':        {tend:'Mantener', cls:'hold'},
+  'LEL':       {tend:'Como lo planteamos en la reunión es crecer. La duda es cuánto crecer con el valor de la vaca por las nubes. Mínimos vamos a comprar la reposición y la idea es una jaula más. Pero nada tenemos que analizar cómo conviene comprar y también si comprar una tercera jaula.', cls:'up'},
+  'GdA y Trap':{tend:'Crecer aumentando el % de reposición', cls:'up'},
+  'ENDSA':     {tend:'Pleno proceso de decision, en principio se reduce', cls:'dn'},
+  'ENT':       {tend:'Crecer', cls:'up'},
+  'IWSA':      {tend:'Crecer cuidadosamente.', cls:'up'},
+  'AMSA':      {tend:'Vamos a decrecer, estamos reorganizando el rodeo, vamos a liquidar todas las vacas actuales del plantel (185) y la idea es incorporar unas 150 vacas de segunda o tercera parición.', cls:'dn'},
+  'RyJLC':     {tend:'Decrecer????', cls:'dn'},
+ },
+ cyv: {
+  'MBSA':      {c:'No', v:'Vendimos 380/90 m y h a 6500 de 180 con 30 y 60'},
+  'C4':        {c:'No hubo', v:'Nov. Hol. 405 kgs $4330'},
+  'OASA':      {c:'Terneros/as 120 de 170kilos 6600 pesos a pagar con nera 360 dias en dolares al 3,5%', v:'Vaquillonas 461 a 1461 dolares, 150 novillitos salta 280 kg a 5500 pesos'},
+  'LEL':       {v:'Se vendieron 113 machos, 213 kg netos a 6650 pesos/kg y 91 hembras a 193kg netos a 6200 $/kg. Ambos precios libre de gastos a retirar del campo. Se hizo con de campo a campo (muy satisfecho) y la aplicación que tienen cuando cobras es muy interesante porque podes liberar pagos o trasferencias sin que entren a tu cuenta. Y además que te abre el abanico de ofertas.'},
+  'GdA y Trap':{c:'Trapalcó: 120 terneras de 215 kg a 6.250 $/kg con 30 y 60 días\nGolpe de Agua: 291 novillos de 357.8 kg a 5.483 $/kg con crédito Procampo Digital en U$S a 180 días tasa Cero\n280 terneras de 201 kg para engorde a 6.600 $/kg', v:'Trapalcó: MAG 11 novillitos 380 a 5.100 $ y 13 vq 340 a 5.310 $\nGolpe de Agua: 4 MEJ de 410 a 3.000 $/kg, 7 vq 350 a 5.300 $, 2 toros 690 a 3.200 $/kg'},
+  'ENDSA':     {c:'Solo vaca preñada cut 1.450.000 / 1.750.000, buscando 1.550.000 promedio. Es el negocio historico....como dijo un cumpa...hoy no da nada.\nEl promedio estoy en 1.590.000'},
+  'ENT':       {c:'No se compro', v:'No se vendio'},
+  'IWSA':      {c:'Se compraron vaquillonas de tambo, nada mas.', v:'Terneros macho Angus: 85 animales, peso promedio 215 Kg. Se tomó desbaste del 4%, $6.200/Kg.\nTerneros macho Holando: 54 animales, peso prom 126 Kg. Se tomó desbaste 3%, $4.870/Kg'},
+  'AMSA':      {c:'No se compró', v:'No se vendió aún.'},
+  'RyJLC':     {c:'Tros ha 4500', v:'Nov ha 4430\nVac mz 3670\nNtos mz 5400\nVaq mz 5330'},
+ },
+ tbo: {
+  'C4':    'Un año que permite guardar mucha comida, finalizando obra del tambo, bastante barro se junto.',
+  'IWSA':  'Estamos viendo si sale línea de crédito para encarar celda (con Osvaldo Varela)\nTenemos que cambiar el tractor que tira el mixer. Básicamente estamos entre John Deere o Case Puma (valen prácticamente lo mismo)',
+  'RyJLC': 'Una alerta que pasa con la vacaaaaa, bajamos produccion x efecto vereno + calesita y no podemos remontar litros',
+ },
+ fin: {
+  'MBSA':      {sit:'Buena pero necesito guita del gsol, no me gusta mucho', fin:'90% campaña pagada canje contado', cls:'ok'},
+  'C4':        {sit:'Bien', fin:'Nada', cls:'ok'},
+  'OASA':      {sit:'Buena', fin:'Galicia nera 1 año 3,5% de interes\n1 jaula de hacienda para el norte, 48000 dolares 270 dias tasa 0 agroquimicos para leñosas en salta', cls:'ok'},
+  'SH':        {sit:'Ajustada', fin:'Ninguna', cls:'reg'},
+  'LEL':       {sit:'Buena. Ahora en los próximos meses se viene duro porque cae. Todos los vencimientos de tarjeta, nera y algún crédito.', cls:'ok'},
+  'GdA y Trap':{sit:'Igual situación reunión Rosen', cls:'reg'},
+  'ENDSA':     {sit:'OPTIMA, por liquidacion de hacienda, viendo como me posiciono y sobre que.', fin:'Tomando condiciones EXPO en distintos temas.', cls:'ok'},
+  'Lepoma':    {sit:'Chota porque no tenia kilombo con el sisa, de otra forma venia perfecto con el financiero..', fin:'Larti 150 millones de pesos en dolares a 0,5%\nGalicia 30k uss al 8% a un mes\ntodo para cubrir el tema del sisa 3 que no pude liquidar..', cls:'mal'},
+  'ENT':       {sit:'Buena', fin:'Gestionando credito para compra pulv', cls:'ok'},
+  'AL':        {sit:'El día a día justo pero venimos bien. Tranquilo por ahora', fin:'Ninguna mas allá de lo comercial normal', cls:'reg'},
+  'IWSA':      {sit:'Buena', fin:'Analizando de tomar alguna linea de expoagro para las inversiones.', cls:'ok'},
+  'RyJLC':     {sit:'Buena!', fin:'Todo el cupo de agronacion 440M pesos + 800.000 usd a 5 años al 2,75%', cls:'ok'},
+ },
+ inver: {
+  'MBSA':      'Informada en reunión anterior',
+  'C4':        'Nada',
+  'OASA':      'Casilla de operaciones, chimango',
+  'SH':        'Ninguna',
+  'LEL':       'La idea es cambiar el puma 230 por un New Holland T8350 con BERGER con un crédito del nación al 2,75% en dólares a 4 años. La diferencia por la entrega de usado es de 190 mil dólares. Compra de vacas preñadas o vaquillonas (analizando si con crédito)',
+  'GdA y Trap':'Trapalcó: analizando extrusoras de soja de 240 a 480 kg/hora, trifásicas',
+  'ENDSA':     'Los comentados, y aprovechando condiciones EXPO\nCambio Tractor, Rolo, Paratil, etc.',
+  'ENT':       'Pulv, camioneta, tractor, agua y alambres',
+  'IWSA':      'Comprado: Pala de arrastre tractor\nPor comprar: Celdas para tambo, tractor',
+  'RyJLC':     'Reemplazo de tractores\nAgregar una celda en la ponderosa',
+ },
+ datos:[
+  {t:'Lt / VO / día', cols:['AL','LA','LP','C4'],
+   rows:[[2021,25.1,32.1,37.8,31.6],[2022,26.2,31.6,38.1,29.2],[2023,29.2,28.3,39.2,34.0],[2024,29.7,31.7,37.8,32.2],[2025,29.9,34.0,37.2,34.3],[2026,30.0,34.2,37.3,35.2]]},
+  {t:'Vacas en ordeñe (VO)', cols:['AL','LA','LP','C4'],
+   rows:[[2021,606,535,1881,419],[2022,637,490,1927,394],[2023,696,453,2218,478],[2024,683,346,2240,486],[2025,767,361,2727,523],[2026,848,458,2765,544]]},
+  {t:'Litros diarios totales', cols:['AL','LA','LP','C4'],
+   rows:[[2021,15205,18550,71099,13222],[2022,16706,15463,73467,11240],[2023,20314,12793,86961,15995],[2024,20287,10974,84739,15650],[2025,22948,12275,101440,17929],[2026,25408,15736,103135,19131]]},
+ ],
+},
+};
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+function ico(n){ return (n||'').replace(/[^A-Za-z0-9]/g,'').substring(0,3).toUpperCase()||'?'; }
+
+function erow(tag,val){ return `<div class="erow"><span class="etag">${esc(tag)}</span><span class="val">${esc(val)}</span></div>`; }
+function erownl(tag,html){ return `<div class="erow"><span class="etag">${esc(tag)}</span><span class="val">${html}</span></div>`; }
+
+function card(cls,icon,title,body,full){ return `<div class="card ${cls}${full?' full':''}">\n<div class="card-head">${icon} ${esc(title)}</div>\n${body}</div>`; }
+
+function finBadge(cls,sit){ const s={ok:{cls:'ok',sym:'✓'},reg:{cls:'reg',sym:'~'},mal:{cls:'mal',sym:'✕'}}[cls]||{cls:'reg',sym:'~'}; return `<span class="fb ${s.cls}">${s.sym} ${esc(sit)}</span>`; }
+function criaBadge(cls,txt){ const s={up:{cls:'up',sym:'↑'},hold:{cls:'hold',sym:'→'},dn:{cls:'dn',sym:'↓'}}[cls]||{cls:'hold',sym:'→'}; return `<span class="cb ${s.cls}">${s.sym} ${esc(txt)}</span>`; }
+
+function fmtN(n){ if(n===null||n===undefined) return '<span class="na">s/d</span>'; if(n>=1000) return n.toLocaleString('es-AR',{maximumFractionDigits:0}); return n.toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+
+function buildDatos(datos){
+  return datos.map(t=>{
+    const rows = t.rows;
+    const last = rows[rows.length-1];
+    const prev = rows[rows.length-2];
+    let tbody='';
+    rows.forEach((r,i)=>{
+      const isL=(i===rows.length-1);
+      let cells='';
+      for(let j=1;j<r.length;j++){
+        const v=r[j], p=prev?prev[j]:null;
+        let delta='';
+        if(isL&&p!=null&&v!=null){const pct=((v-p)/p*100).toFixed(1); delta=v>p?` <span class="dp">▲${pct}%</span>`:v<p?` <span class="dn2">▼${Math.abs(pct)}%</span>`:'`';}
+        cells+=`<td>${fmtN(v)}${delta}</td>`;
+      }
+      tbody+=`<tr${isL?' class="yr-last"':''}><td>${r[0]}</td>${cells}</tr>`;
+    });
+    const ths=t.cols.map(c=>`<th>${c}</th>`).join('');
+    return `<div class="tbo-sec"><div class="tbo-sec-title">${esc(t.t)}</div><table class="tbo-table"><thead><tr><th>Año</th>${ths}</tr></thead><tbody>${tbody}</tbody></table></div>`;
+  }).join('');
+}
+
+// ─── RENDER TABS ──────────────────────────────────────────────────────────────
+function render(m){
+  const d=D[m], emps=d.empresas;
+
+  // ── RESUMEN ──
+  let html='<div class="grid">';
+
+  // Temas
+  let tBody='';
+  emps.forEach(e=>{
+    const t=d.temas&&d.temas[e]; if(!t) return;
+    const parts=[];
+    if(t.emp) parts.push(`<b>Empresarial:</b> ${esc(t.emp)}`);
+    if(t.tec) parts.push(`<b>Técnico:</b> ${esc(t.tec)}`);
+    if(t.inst) parts.push(`<b>Institucional:</b> ${esc(t.inst)}`);
+    if(t.otro) parts.push(esc(t.otro));
+    if(parts.length) tBody+=erownl(e,parts.join('<br>'));
+  });
+  if(tBody) html+=card('oth','💬','Novedades y temas propuestos',tBody,true);
+
+  // Gruesa
+  let gBody='';
+  emps.forEach(e=>{ if(d.gruesa&&d.gruesa[e]) gBody+=erow(e,d.gruesa[e]); });
+  if(gBody) html+=card('agro','🌻','Gruesa 2025/26',gBody,true);
+
+  // CC
+  let ccBody='';
+  emps.forEach(e=>{ if(d.cc&&d.cc[e]) ccBody+=erow(e,d.cc[e]); });
+  if(ccBody) html+=card('agro','🌾','Cultivos de cobertura',ccBody);
+
+  // Comercial
+  let coBody='';
+  emps.forEach(e=>{ if(d.comercial&&d.comercial[e]) coBody+=erow(e,d.comercial[e]); });
+  if(coBody) html+=card('agro','📊','Comercialización',coBody);
+
+  // Cría tendencia
+  let criaBody='';
+  emps.forEach(e=>{ const c=d.cria&&d.cria[e]; if(!c||!c.tend) return; criaBody+=erownl(e,criaBadge(c.cls,c.tend)); });
+  if(criaBody) html+=card('gan','🐄','Cría — tendencia',criaBody);
+
+  // Financiero resumen
+  let finBody='';
+  emps.forEach(e=>{ const f=d.fin&&d.fin[e]; if(!f||!f.sit) return; finBody+=erownl(e,finBadge(f.cls,f.sit)); });
+  if(finBody) html+=card('fin','💰','Situación financiera',finBody);
+
+  html+='</div>';
+  document.getElementById(m+'-resumen').innerHTML=html;
+
+  // ── AGRÍCOLA ──
+  let ahtml='<div class="grid">';
+  if(gBody) ahtml+=card('agro','🌻','Gruesa 2025/26',gBody,true);
+  if(ccBody) ahtml+=card('agro','🌾','Cultivos de cobertura',ccBody);
+  if(coBody) ahtml+=card('agro','📊','Comercialización',coBody);
+  if(d.insumos){
+    let insBody=''; emps.forEach(e=>{ if(d.insumos[e]) insBody+=erow(e,d.insumos[e]); });
+    if(insBody) ahtml+=card('agro','🧪','Insumos 2026/27',insBody);
+  }
+  ahtml+='</div>';
+  document.getElementById(m+'-agro').innerHTML=ahtml;
+
+  // ── GANADERÍA ──
+  let ganhtml='<div class="grid">';
+  // Estado cría (feb has it)
+  let estBody='';
+  if(d.cria) emps.forEach(e=>{ const c=d.cria[e]; if(c&&c.est) estBody+=erow(e,c.est); });
+  if(estBody) ganhtml+=card('gan','🐄','Estado de la cría',estBody,true);
+  if(criaBody) ganhtml+=card('gan','📈','Tendencia en cría',criaBody);
+  // C&V
+  let cyvBody='';
+  emps.forEach(e=>{
+    const cv=d.cyv&&d.cyv[e]; if(!cv) return;
+    const parts=[];
+    if(cv.c) parts.push(`<b>Compras:</b> ${esc(cv.c)}`);
+    if(cv.v) parts.push(`<b>Ventas:</b> ${esc(cv.v)}`);
+    if(parts.length) cyvBody+=erownl(e,parts.join('<br>'));
+  });
+  if(cyvBody) ganhtml+=card('gan full','🛒','Compras y ventas',cyvBody,true);
+  ganhtml+='</div>';
+  document.getElementById(m+'-gan').innerHTML=ganhtml;
+
+  // ── TAMBO ──
+  let tbohtml='<div class="grid">';
+  let tboNovBody='';
+  emps.forEach(e=>{ if(d.tbo&&d.tbo[e]) tboNovBody+=erow(e,d.tbo[e]); });
+  if(tboNovBody) tbohtml+=card('tbo','💬','Novedades de tambo',tboNovBody,true);
+  if(d.datos){
+    const tablesHtml=buildDatos(d.datos);
+    tbohtml+=`<div class="card tbo full"><div class="card-head">📊 Datos productivos — cierre enero de cada año</div><div style="padding:14px 16px;">${tablesHtml}</div></div>`;
+  }
+  tbohtml+='</div>';
+  document.getElementById(m+'-tbo').innerHTML=tbohtml;
+
+  // ── FINANCIERO ──
+  let finhtml='<div class="grid">';
+  let finFullBody='';
+  emps.forEach(e=>{
+    const f=d.fin&&d.fin[e]; if(!f) return;
+    let content=finBadge(f.cls,f.sit);
+    if(f.fin) content+=`<br><span style="color:var(--muted);font-size:12px">Financiación: ${esc(f.fin)}</span>`;
+    finFullBody+=erownl(e,content);
+  });
+  if(finFullBody) finhtml+=card('fin full','💰','Situación financiera y financiación',finFullBody,true);
+  // Comentarios adicionales feb
+  if(d.comentarios){
+    let comBody=''; emps.forEach(e=>{ if(d.comentarios[e]) comBody+=erow(e,d.comentarios[e]); });
+    if(comBody) finhtml+=card('oth full','💬','Otros comentarios',comBody,true);
+  }
+  finhtml+='</div>';
+  document.getElementById(m+'-fin').innerHTML=finhtml;
+
+  // ── INVERSIONES ──
+  let invhtml='<div class="grid">';
+  let invBody=''; emps.forEach(e=>{ if(d.inver&&d.inver[e]&&d.inver[e]!='Ninguna'&&d.inver[e]!='Nada') invBody+=erow(e,d.inver[e]); });
+  if(invBody) invhtml+=card('inv full','🔧','Inversiones recientes / previstas',invBody,true);
+  invhtml+='</div>';
+  document.getElementById(m+'-inv').innerHTML=invhtml;
+
+  // ── POR EMPRESA ──
+  const btns=emps.map(e=>`<div class="emp-btn" onclick="selEmp('${m}','${e.replace(/'/g,"\\'")}',this)"><div class="emp-ico">${ico(e)}</div><div><div class="emp-nm">${esc(e)}</div></div></div>`).join('');
+  document.getElementById(m+'-empresa').innerHTML=`<div class="emp-grid" id="${m}-emp-grid">${btns}</div><div id="${m}-emp-det"></div>`;
+
+  // Attach modal listeners
+  ['resumen','agro','gan','tbo','fin','inv'].forEach(tab=>{
+    const el=document.getElementById(m+'-'+tab);
+    if(el) el.querySelectorAll('.card-head').forEach(h=>h.onclick=()=>openModal(h));
+  });
+
+  // Select first empresa
+  const firstBtn=document.querySelector(`#${m}-emp-grid .emp-btn`);
+  if(firstBtn){ firstBtn.classList.add('active'); renderEmpDetail(m,emps[0]); }
+}
+
+function selEmp(m,e,el){
+  document.querySelectorAll(`#${m}-emp-grid .emp-btn`).forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderEmpDetail(m,e);
+}
+
+function renderEmpDetail(m,e){
+  const det=document.getElementById(m+'-emp-det'); if(!det) return;
+  const d=D[m];
+  let items='';
+
+  function di(label,cat,content,full){
+    const catNames={agro:'Agrícola',gan:'Ganadería',fin:'Financiero',tbo:'Tambo',inv:'Inversiones',oth:'Novedades'};
+    if(!content) return '';
+    return `<div class="d-item${full?' full':''}"><div class="d-lbl"><span class="pill ${cat}">${catNames[cat]||cat}</span>${label}</div><div class="d-val">${content}</div></div>`;
+  }
+
+  // Temas
+  const t=d.temas&&d.temas[e];
+  if(t){
+    const parts=[];
+    if(t.emp) parts.push(`<b>Empresarial:</b> ${esc(t.emp)}`);
+    if(t.tec) parts.push(`<b>Técnico:</b> ${esc(t.tec)}`);
+    if(t.inst) parts.push(`<b>Institucional:</b> ${esc(t.inst)}`);
+    if(t.otro) parts.push(esc(t.otro));
+    if(parts.length) items+=di('💬 Novedades / temas','oth',parts.join('<br>'),true);
+  }
+
+  // Agrícola
+  if(d.gruesa&&d.gruesa[e]) items+=di('🌻 Gruesa 2025/26','agro',esc(d.gruesa[e]));
+  if(d.cc&&d.cc[e]) items+=di('🌾 Coberturas','agro',esc(d.cc[e]));
+  if(d.comercial&&d.comercial[e]) items+=di('📊 Comercialización','agro',esc(d.comercial[e]));
+  if(d.insumos&&d.insumos[e]) items+=di('🧪 Insumos 2026/27','agro',esc(d.insumos[e]));
+
+  // Ganadería
+  const c=d.cria&&d.cria[e];
+  if(c){
+    if(c.est) items+=di('🐄 Estado cría','gan',esc(c.est),true);
+    if(c.tend) items+=di('📈 Tendencia cría','gan',criaBadge(c.cls,c.tend));
+  }
+  const cv=d.cyv&&d.cyv[e];
+  if(cv){
+    const parts=[];
+    if(cv.c) parts.push(`<b>Compras:</b> ${esc(cv.c)}`);
+    if(cv.v) parts.push(`<b>Ventas:</b> ${esc(cv.v)}`);
+    if(parts.length) items+=di('🛒 Compras / Ventas','gan',parts.join('<br>'),true);
+  }
+
+  // Tambo
+  if(d.tbo&&d.tbo[e]) items+=di('🐮 Tambo','tbo',esc(d.tbo[e]),true);
+
+  // Financiero
+  const f=d.fin&&d.fin[e];
+  if(f&&f.sit){
+    let fc=finBadge(f.cls,f.sit);
+    if(f.fin) fc+=`<br><b>Financiación:</b> ${esc(f.fin)}`;
+    items+=di('💰 Financiero','fin',fc,true);
+  }
+
+  // Inversiones
+  if(d.inver&&d.inver[e]) items+=di('🔧 Inversiones','inv',esc(d.inver[e]),true);
+
+  // Comentarios adicionales
+  if(d.comentarios&&d.comentarios[e]) items+=di('💬 Comentario adicional','oth',esc(d.comentarios[e]),true);
+
+  det.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;margin-bottom:13px;display:flex;align-items:center;gap:11px;">
+    <div style="width:42px;height:42px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">${ico(e)}</div>
+    <div style="font-size:17px;font-weight:700;">${esc(e)}</div>
+  </div><div class="d-grid">${items||'<div style="color:var(--muted);font-size:13px;">Sin datos registrados.</div>'}</div>`;
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(h){
+  const c=h.closest('.card'); const clone=c.cloneNode(true); clone.querySelector('.card-head').remove();
+  const mh=document.getElementById('modal-hd');
+  mh.style.background=getComputedStyle(h).backgroundColor;
+  mh.style.color=getComputedStyle(h).color;
+  document.getElementById('modal-title').textContent=h.textContent.replace('⤢','').trim();
+  document.getElementById('modal-body').innerHTML=clone.innerHTML;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('overlay')) return;
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}});
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+let curM='mar', curT='resumen';
+function switchMonth(m,el){
+  document.querySelectorAll('.m-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active');
+  document.querySelectorAll('.m-panel').forEach(p=>p.classList.remove('active')); document.getElementById('m-'+m).classList.add('active');
+  curM=m;
+  document.querySelectorAll('.t-panel').forEach(p=>p.classList.remove('active'));
+  const tp=document.getElementById(m+'-'+curT); if(tp) tp.classList.add('active');
+}
+function switchTab(t,el){
+  document.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active');
+  document.querySelectorAll(`#m-${curM} .t-panel`).forEach(p=>p.classList.remove('active'));
+  const tp=document.getElementById(curM+'-'+t); if(tp) tp.classList.add('active');
+  curT=t;
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render('feb');
+render('mar');
+</script>
+</body>
+</html>
