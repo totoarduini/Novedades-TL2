@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intercambio CREA TL2 — 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f1ec; --surface: #fff; --surface2: #ede9e1; --border: #dbd6cc;
+  --text: #2b2925; --muted: #7a7266;
+  --agro: #456b4f; --agro-bg: #e7f1ea;
+  --gan:  #7a5230; --gan-bg:  #f5ebe2;
+  --fin:  #305a7a; --fin-bg:  #e2edf5;
+  --tbo:  #5a6b40; --tbo-bg:  #edf1e4;
+  --oth:  #5f4a7a; --oth-bg:  #ece6f4;
+  --tag: #e2ddd6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+header { background: #211e1a; color: #fff; padding: 24px 32px 20px; }
+header h1 { font-size: 20px; font-weight: 600; letter-spacing: -.3px; }
+header p  { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 3px; font-weight: 300; }
+
+.month-bar { background: #2d2925; padding: 0 32px; display: flex; border-bottom: 1px solid rgba(255,255,255,.08); }
+.month-btn { padding: 12px 22px; cursor: pointer; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.45); border-bottom: 3px solid transparent; transition: all .18s; user-select: none; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+.month-btn:hover { color: rgba(255,255,255,.8); }
+.month-btn.active { color: #fff; border-bottom-color: #c9a76a; }
+.month-btn .cnt { display: inline-block; font-size: 11px; font-family: 'IBM Plex Mono', monospace; background: rgba(255,255,255,.12); border-radius: 4px; padding: 1px 6px; margin-left: 7px; }
+.month-btn.active .cnt { background: rgba(201,167,106,.25); color: #c9a76a; }
+
+.tab-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 2px; overflow-x: auto; }
+.tab-btn { padding: 13px 18px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; transition: all .18s; user-select: none; background: none; border-top: none; border-left: none; border-right: none; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+.tab-btn .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+.container { max-width: 1120px; margin: 0 auto; padding: 26px 32px 60px; }
+.month-panel { display: none; }
+.month-panel.active { display: block; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeUp .2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+.card.agro { border-left: 4px solid var(--agro); }
+.card.gan  { border-left: 4px solid var(--gan);  }
+.card.fin  { border-left: 4px solid var(--fin);  }
+.card.tbo  { border-left: 4px solid var(--tbo);  }
+.card.oth  { border-left: 4px solid var(--oth);  }
+.card.full { grid-column: 1 / -1; }
+.card-head { padding: 11px 16px; font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid var(--border); }
+.card.agro .card-head { background: var(--agro-bg); color: var(--agro); }
+.card.gan  .card-head { background: var(--gan-bg);  color: var(--gan);  }
+.card.fin  .card-head { background: var(--fin-bg);  color: var(--fin);  }
+.card.tbo  .card-head { background: var(--tbo-bg);  color: var(--tbo);  }
+.card.oth  .card-head { background: var(--oth-bg);  color: var(--oth);  }
+
+.erow { padding: 11px 16px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 62px 1fr; gap: 10px; align-items: start; font-size: 13px; }
+.erow:last-child { border-bottom: none; }
+.etag { display: inline-flex; align-items: center; justify-content: center; background: var(--tag); border-radius: 5px; font-size: 11px; font-weight: 700; padding: 2px 6px; white-space: nowrap; letter-spacing: .3px; }
+.erow .val { line-height: 1.55; }
+.erow .val.empty { color: var(--muted); font-style: italic; }
+
+.emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.emp-sel { background: var(--surface); border: 2px solid var(--border); border-radius: 9px; padding: 11px 14px; cursor: pointer; transition: all .18s; display: flex; align-items: center; gap: 10px; user-select: none; }
+.emp-sel:hover { border-color: #b0a898; }
+.emp-sel.active { border-color: var(--text); background: var(--text); color: #fff; }
+.emp-sel.active .emp-sub { color: rgba(255,255,255,.5); }
+.emp-ico { width: 34px; height: 34px; border-radius: 7px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; flex-shrink: 0; letter-spacing: -.3px; }
+.emp-sel.active .emp-ico { background: rgba(255,255,255,.13); color: #fff; }
+.emp-nm { font-weight: 600; font-size: 13px; }
+.emp-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+.detail-hdr { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 16px 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; }
+.detail-ico { width: 48px; height: 48px; border-radius: 9px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+.detail-nm { font-size: 18px; font-weight: 700; }
+.detail-dt { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:640px) { .detail-grid { grid-template-columns: 1fr; } }
+.ditem { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
+.ditem.full { grid-column: 1/-1; }
+.dlabel { font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.pill { padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.pill.agro { background: var(--agro-bg); color: var(--agro); }
+.pill.gan  { background: var(--gan-bg);  color: var(--gan);  }
+.pill.fin  { background: var(--fin-bg);  color: var(--fin);  }
+.pill.tbo  { background: var(--tbo-bg);  color: var(--tbo);  }
+.pill.oth  { background: var(--oth-bg);  color: var(--oth);  }
+.dval { font-size: 13px; line-height: 1.55; }
+.dval.empty { color: var(--muted); font-style: italic; }
+
+/* BADGES — cría y financiero comparten estructura */
+.cb, .fb { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; font-weight: 600; font-size: 12px; }
+.cb.up,  .fb.ok  { background: #e7f1ea; color: #2d6040; }
+.cb.hold,.fb.reg { background: #fef9e7; color: #7d6a00; }
+.cb.dn,  .fb.mal { background: #fdecea; color: #8b1a1a; }
+
+/* TAMBO TABLE */
+.tbo-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbo-table th { background: var(--tbo-bg); color: var(--tbo); font-weight: 600; font-size: 11px; letter-spacing: .4px; text-transform: uppercase; padding: 8px 12px; text-align: right; border-bottom: 2px solid var(--border); }
+.tbo-table th:first-child { text-align: left; }
+.tbo-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+.tbo-table td:first-child { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; text-align: left; font-size: 13px; }
+.tbo-table tr:last-child td { border-bottom: none; }
+.tbo-table .yr2026 { background: #f7f4ef; font-weight: 600; }
+.tbo-table .na { color: var(--muted); font-style: italic; }
+.delta-pos { color: #2d6040; font-size: 11px; }
+.delta-neg { color: #8b1a1a; font-size: 11px; }
+.tbo-section { margin-bottom: 22px; }
+.tbo-section:last-child { margin-bottom: 0; }
+.tbo-section-title { font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--tbo); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+/* EXPAND HINT on card headers */
+.card-head { cursor: pointer; position: relative; }
+.card-head::after {
+  content: '⤢';
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; opacity: .4; font-style: normal;
+}
+.card-head:hover::after { opacity: .8; }
+
+/* MODAL OVERLAY */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(30,26,22,.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  padding: 16px;
+  overflow-y: auto;
+  animation: overlayIn .18s ease;
+}
+@keyframes overlayIn { from { opacity:0; } to { opacity:1; } }
+.modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+.modal-box {
+  background: var(--surface);
+  border-radius: 14px;
+  width: 100%; max-width: 760px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  animation: boxIn .2s ease;
+}
+@keyframes boxIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:none; } }
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px;
+  font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 1;
+}
+.modal-close {
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: var(--surface2); color: var(--text);
+  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; line-height: 1;
+}
+.modal-close:hover { background: var(--border); }
+.modal-body { padding: 16px 18px; overflow-x: auto; }
+.modal-body .tbo-table td, .modal-body .tbo-table th { padding: 9px 14px; font-size: 13px; }
+.modal-body .erow { grid-template-columns: 68px 1fr; }
+
+@media(max-width:700px) {
+  .container { padding: 18px 16px 60px; }
+  .month-bar, .tab-bar { padding: 0 16px; }
+  header { padding: 20px 16px 16px; }
+  .grid { grid-template-columns: 1fr; }
+  .emp-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .tbo-table td, .tbo-table th { padding: 6px 7px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Intercambio CREA TL2 — 2026</h1>
+  <p>Resumen de respuestas al formulario mensual de novedades</p>
+</header>
+
+<div class="month-bar">
+  <button class="month-btn" data-month="feb" onclick="switchMonth('feb',this)">Febrero 2026 <span class="cnt">11</span></button>
+  <button class="month-btn active" data-month="mar" onclick="switchMonth('mar',this)">Marzo 2026 <span class="cnt">12</span></button>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="resumen" onclick="switchTab('resumen',this)"><span class="dot" style="background:#888"></span>Resumen</button>
+  <button class="tab-btn" data-tab="empresa" onclick="switchTab('empresa',this)"><span class="dot" style="background:#888"></span>Por empresa</button>
+  <button class="tab-btn" data-tab="agro" onclick="switchTab('agro',this)"><span class="dot" style="background:var(--agro)"></span>Agrícola</button>
+  <button class="tab-btn" data-tab="gan" onclick="switchTab('gan',this)"><span class="dot" style="background:var(--gan)"></span>Ganadería</button>
+  <button class="tab-btn" data-tab="fin" onclick="switchTab('fin',this)"><span class="dot" style="background:var(--fin)"></span>Financiero</button>
+  <button class="tab-btn" data-tab="tbo" onclick="switchTab('tbo',this)"><span class="dot" style="background:var(--tbo)"></span>Tambo</button>
+</div>
+
+<div class="container">
+
+<!-- ====================== FEBRERO ====================== -->
+<div class="month-panel" id="month-feb">
+
+  <div class="tab-panel active" id="feb-resumen">
+    <div class="grid">
+      <div class="card oth full">
+        <div class="card-head">💬 Novedades y temas propuestos</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Preocupado por el valor del dólar: ¿conviene vender y pasar a tasa?</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><b>Técnico:</b> Buena convocatoria a la intermedia de engorde.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><b>Técnico:</b> Paraquat con drones para secar girasol — ¿experiencias y tiempos? Lotes con yuyo colorado en soja — ¿Enlist o Calisto?</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><b>Técnico:</b> Varios lotes de soja con mucho yuyo colorado.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Post cosecha girasol — barbecho vs rolo. Cálculo eléctrico para bajar boleta. Automatización de control de documentos.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><b>Empresario:</b> ¿El negocio de cría/tenencia de vacas sirve? ¿La situación actual es pasajera? — <b>Institucional:</b> Opinión sobre el coordinador.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">¿Alguien hizo inversiones en agua para hacienda? ¿Tanque australiano o de plástico?</span></div>
+      </div>
+      <div class="card agro full">
+        <div class="card-head">🌻 Gruesa 2025/26 — estado y rindes esperados</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Bien, necesitando agua. Se empezaron a marcar las sojas.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Bueno a muy bueno. Lomas con algo de estrés. Maíz húmedo temprano: 10.600 seco. Girasoles lindos, en 12/15 días.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Con la lluvia de ayer: ~3 gsol, 3,5 soja, 7,5 maíz.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Gsol a entregarse en ~1 semana. Maíz temp: 32–33 tn MV (Z8 Natal Seed). Soja: 3,5 tn 1ra, 1,8–2,0 tn 2da.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Gsol bueno/muy bueno 2,8–3 tn. Maíz 1ra 9–10 tn. Maíz tardío esperando agua. Soja 3,7–4 tn.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Buenos en general, lomas afectadas. Gsol 2,8/3, maíz1 8,5, soja 3,5/3,8. Tardío aún falta.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Todo muy bueno. Maíz húmedo: ~8.000 kg seco.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Buenos. Gsol 2,8/3, maíz 8,5, soja 3,8. Tardío sin número, mejor perspectiva con lluvias.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Muy buenos. Gsol conf. 2.300 kg. M1 8.500 / MT 7.500. Soja1t 3.800 / Soja1td 3.200 / Soja2 2.800.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Buenos. Gsol atrasado (ciclo largo). Sojas y maíces entre muy buenos y regulares. Mejor de lo esperado.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Se ven bien, faltó algo de agua. Silo maíz: prom. 44 tn/ha.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🌾 Cultivos de cobertura</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Vicia y centeno según ambiente.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">500ha centeno (verdeo y cobertura). Muy satisfechos con Hebe en Tres Lomas.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Córdoba: contornos ~250ha.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: 124ha centeno · GdA: 254ha centeno.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Sin cobertura; verdeos avena/centeno sobre girasol.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Verdeos; posible cobertura puntual en loma.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Más situaciones y más has que el año pasado.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Centeno en partes altas para reducir erosión.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">~120ha centeno · 30ha vicia.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">50ha centeno (verdeo o cobertura).</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">~300ha. Vicia previa a maíz demorado: muy bien.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">📊 Comercialización</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Gsol 45% u$s378 · Soja 27% u$s315 · Trigo 70% u$s194.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Queda algo de maíz. Algo de trigo y gsol vendido.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Sin 24/25. Gsol 30% · Soja 5% · Maíz 5%.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Sin remanente. Trap: trigo 85% · gsol 54% · maíz 13% · soja 38%. GdA: trigo 100% · gsol 57% · maíz 22% · soja 34%.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Sin 24/25. Gsol 330tn 67% ($350) · Maíz 600tn 24% ($180) · Soja 120tn 16% ($310).</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Mínimos remanentes para venta.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Todo 24/25 vendido. Soja 150tn u$s315 · Maíz 210tn u$s185 (ACA).</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Remanente: gsol 100tn + maíz 1.300tn. Nuevo: cebada 90% · trigo 54% · gsol 37% · soja 28% · maíz 16%.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Vendió todas las existencias antes de cierre de balance.</span></div>
+      </div>
+      <div class="card gan">
+        <div class="card-head">🐄 Cría — tendencia</div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="cb up">↑ Crecer</span> (o recuperar stock anterior)</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="cb up">↑ Crecer</span> (con 70ha pastura y crédito)</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="cb up">↑ Crecer</span> — vende invernada, capitaliza ~250 vaquillonas.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="cb up">↑ Crecer</span></span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="cb up">↑ Crecer</span> — capitalización Ballester + vacas negocio DL.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="cb up">↑ +15% vaca preñada</span> / <span class="cb dn">↓ -20% rodeo general</span></span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Liquidar rodeo y reponer vaca preñada de calidad.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="cb up">↑ Crecer lentamente</span></span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos de hacienda.</span></div>
+      </div>
+      <div class="card fin">
+        <div class="card-head">💰 Situación financiera</div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="fb ok">✓ Buena</span></span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="fb ok">✓ Buena</span></span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="fb ok">✓ Buena</span> — contado o canje.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="fb ok">✓ Trap: bien</span> / <span class="fb reg">~ GdA: ajustada</span> — echeqs + crédito Bice.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="fb ok">✓ Buena</span></span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="fb ok">✓ Óptima</span> — cobró capitalización hacienda.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><span class="fb ok">✓ Buena</span></span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val"><span class="fb reg">~ Regular</span> — se complica 15–30d por SISA.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="fb reg">~ Ajustada</span></span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val"><span class="fb ok">✓ Buena</span> — hay liquidez.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="fb reg">~ Justa</span> — antes de cosecha.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="feb-empresa">
+    <div class="emp-grid" id="feb-emp-grid">
+      <div class="emp-sel active" onclick="selEmp('feb','C4',this)"><div class="emp-ico">C4</div><div><div class="emp-nm">C4</div><div class="emp-sub">22 feb · 10:17</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','LEL',this)"><div class="emp-ico">LEL</div><div><div class="emp-nm">LEL</div><div class="emp-sub">22 feb · 22:44</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','MBSA',this)"><div class="emp-ico">MB</div><div><div class="emp-nm">MBSA</div><div class="emp-sub">23 feb · 09:28</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','GdA',this)"><div class="emp-ico">GdA</div><div><div class="emp-nm">GdA y Trap</div><div class="emp-sub">23 feb · 15:45</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','OASA',this)"><div class="emp-ico">OA</div><div><div class="emp-nm">OASA</div><div class="emp-sub">23 feb · 17:14</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','ENDSA',this)"><div class="emp-ico">EN</div><div><div class="emp-nm">ENDSA</div><div class="emp-sub">24 feb · 18:10</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','RyJLC',this)"><div class="emp-ico">Ry</div><div><div class="emp-nm">RyJLC</div><div class="emp-sub">24 feb · 22:44</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','Lepoma',this)"><div class="emp-ico">Lp</div><div><div class="emp-nm">Lepoma</div><div class="emp-sub">25 feb · 08:34</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','SH',this)"><div class="emp-ico">SH</div><div><div class="emp-nm">SH</div><div class="emp-sub">25 feb · 11:43</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','AMSA',this)"><div class="emp-ico">AM</div><div><div class="emp-nm">AMSA</div><div class="emp-sub">25 feb · 11:46</div></div></div>
+      <div class="emp-sel" onclick="selEmp('feb','IWSA',this)"><div class="emp-ico">IW</div><div><div class="emp-nm">IWSA</div><div class="emp-sub">25 feb · 12:39</div></div></div>
+    </div>
+    <div id="feb-details"></div>
+  </div>
+
+  <div class="tab-panel" id="feb-agro">
+    <div class="grid">
+      <div class="card agro full">
+        <div class="card-head">🌻 Estado de cultivos y rindes esperados</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Bien, necesitando agua. Soja empezando a marcar.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Bueno a muy bueno. Lomas algo estresadas. Maíz húmedo temp. 10.600kg seco. Gsol en ~12/15 días.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Con lluvia: ~3tn gsol · 3,5tn soja · 7,5tn maíz.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Gsol ~1 semana. Maíz temp. 32–33tn MV. Soja 3,5tn 1ra / 1,8–2tn 2da.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Gsol 2,8–3tn · Maíz1 9–10tn · Maíz tardío falta agua · Soja 3,7–4tn.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Buenos, lomas afectadas. Gsol 2,8/3 · M1 8,5 · Soja 3,5/3,8.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Todo muy bueno. M húmedo ~8.000kg seco.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Buenos. Gsol 2,8/3 · M 8,5 · Soja 3,8. Tardío sin número.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Muy buenos. Gsol conf. 2.300kg. M1 8.500 / MT 7.500. Soja1t 3.800 / Soja1td 3.200 / Soja2 2.800.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Buenos. Gsol ciclo largo atrasado. Sojas/maíces muy buenos a regulares.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Bien, algo de agua faltó. Silo maíz: prom. 44tn/ha.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🌾 Cultivos de cobertura previstos</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Vicia y centeno según ambiente.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">500ha centeno. Excelente resultado en Hebe (Tres Lomas).</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Córdoba: contornos ~250ha.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap 124ha · GdA 254ha — ambas centeno.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Sin cobertura. Verdeos avena/centeno sobre gsol.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Verdeos, posible cobertura puntual en loma.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Más situaciones y más has que año anterior.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Centeno en altos para erosión.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">~120ha centeno · 30ha vicia.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">50ha centeno (verdeo o cobertura).</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">~300ha (récord). Vicia previa a maíz demorado: muy bien.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">📊 Comercialización campañas 24/25 y 25/26</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Gsol 45% u$s378 · Soja 27% u$s315 · Trigo 70% u$s194.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Poco maíz 24/25. Algo de trigo y gsol nuevo.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Sin 24/25. Gsol 30% · Soja 5% · Maíz 5%.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Sin remanente. Trap: trigo 85% · gsol 54% · maíz 13% · soja 38%. GdA: trigo 100% · gsol 57% · maíz 22% · soja 34%.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Sin 24/25. Gsol 67% ($350) · Maíz 24% ($180) · Soja 16% ($310).</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Mínimos remanentes para venta.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Soja 150tn u$s315 · Maíz 210tn u$s185 (ACA).</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Remanente: gsol 100tn + maíz 1.300tn. Nuevo: cebada 90% · trigo 54% · gsol 37% · soja 28% · maíz 16%.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Vendió todas las existencias antes de cierre de balance.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="feb-gan">
+    <div class="grid">
+      <div class="card gan">
+        <div class="card-head">🐄 Estado de la cría</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Buen estado, comiendo pasturas. Destete próxima semana.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Terneras ~200kg. Van a salir a ofrecerlas.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Bien. Destete ~400 cabezas.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Buena condición corporal en ambos. Pasturas y llorones. Solo tactos IATF.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">PBA: desteto, comiendo comedero. Recría entregada con muy buen resultado. SALTA: sin lluvias, decidió oxigenar con venta.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Bueno en bajos y llorones. Tacto pendiente.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Buen estado. Destete esta semana. Agropiro en bajo.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Campo natural, poco pasto + último bolsón de silo. Racionando con maíz. Liquidación total del rodeo para reponer con vaca preñada de calidad.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Entre bueno y muy bueno.</span></div>
+      </div>
+      <div class="card gan">
+        <div class="card-head">📈 Tendencia en cría</div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="cb up">↑ Crecer</span> (o recuperar stock anterior)</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="cb up">↑ Crecer</span> (con 70ha pastura y crédito)</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="cb up">↑ Crecer</span> — vende invernada, capitaliza ~250 vaquillonas</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="cb up">↑ Crecer</span></span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="cb up">↑ Crecer</span> — capitalización Ballester + vacas negocio DL</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="cb up">↑ Vaca preñada +15%</span> / <span class="cb dn">↓ General -20%</span></span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Reposición total con vaca preñada según oferta forrajera</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="cb up">↑ Crecer lentamente</span></span></div>
+      </div>
+      <div class="card gan full">
+        <div class="card-head">🛒 Movimientos de hacienda</div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><b>V:</b> 65 machos $6.500 (180–200kg) · 25 nov. overos 394kg $4.410.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><b>V:</b> Ofertadas 400 M y H ~150/160kg prom.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><b>C:</b> Trap: 70 terneras $5.255/kg 208kg 30y60. <b>V:</b> Trap: 41 nov. 433kg $4.400. GdA: 14ntos 361kg $4.700; 10ntos 430kg $4.400; 30 vaq. 303kg $4.800.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><b>C:</b> Terneros/as norte 170kg $6.210 60d. <b>V:</b> Novillitos 310kg $4.900.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><b>C:</b> NOA 70/30 MyH $5.400 · PBA vaca cut preñada $1,45–1,75M. <b>V:</b> Recría NOA $4.850 &lt;300kg, entregas diferidas.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><b>C:</b> 70 terneras $4.800 · 105 vacas vacías $2.600 · 38 vac. preñadas $1,6M. <b>V:</b> Novillitos $4.430 420kg.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><b>C:</b> Vaq. tambo semen sexado/conv. 5.500lts. <b>V:</b> Terneros cría 213kg $6.200; ternero holando 120kg $5.000.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin movimientos.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="feb-fin">
+    <div class="grid">
+      <div class="card fin full">
+        <div class="card-head">💰 Situación financiera y financiación</div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="fb ok">✓ Buena</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="fb ok">✓ Buena</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="fb ok">✓ Buena</span> — contado o canje.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="fb ok">✓ Trap: bien</span> / <span class="fb reg">~ GdA: ajustada</span> — venta echeqs + crédito Bice $210M.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="fb ok">✓ Buena</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="fb ok">✓ Óptima</span> — cobró capitalización hacienda. Cheques 28–36%. USD al 7% para cubrir vencimientos.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val"><span class="fb ok">✓ Buena</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val"><span class="fb reg">~ Regular</span> — se complica 15–30d por SISA. Incorporó Cocos para operatoria de granos.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="fb reg">~ Ajustada</span></span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val"><span class="fb ok">✓ Buena</span> — hay liquidez. Sin financiación.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="fb reg">~ Justa</span> — antes de cosecha; viendo financiación chica en USD al 9% por 1 año.</span></div>
+      </div>
+      <div class="card fin full">
+        <div class="card-head">🔧 Inversiones recientes / previstas</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Balanza individual Farmequip $5,5M. Evaluando Gallagher full u$s6.900.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Cambio tractor 230→270CC (Expo). Más vientres.</span></div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Compra 640ha Girodías + venta Alvear 320ha (210 sembrables).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: molino extrusor plásticos + máquina postes/varillas.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Chimango · tolva semillera · desmalezadora · tractor · casilla+balanza Huelen.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Balanza camión instalada. 2 casillas + balanzas + bastón. Equipo pastura de corte.</span></div>
+        <div class="erow"><span class="etag">RyJLC</span><span class="val">Motoniveladora importada. Expo: tractores 15.000hs + embolsadora + monotolva. Carretón retro.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">2 tolvas 10tn Impagro (12 cheques).</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">16ha compradas. Cambio maicero→Allochis. Toyota de Diego→Amarok.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Celda tambo + cambio bretes. ~$150M.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="feb-tbo">
+    <div class="grid">
+      <div class="card tbo full">
+        <div class="card-head">💬 Novedades de tambo</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">En obra: agregando 8 puntos más de ordeñe e instalando pasteurizador.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Evaluando celda de tambo y cambio de bretes (~$150M). Compra de vaquillonas semen sexado y convencional, 5.500 lts, parición marzo.</span></div>
+      </div>
+      <div class="card tbo full">
+        <div class="card-head">📊 Datos productivos — cerrados enero de cada año</div>
+        <div style="padding:16px 18px;">
+          <div class="tbo-section">
+            <div class="tbo-section-title">Lt / VO / día</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>26,6</td><td>32,5</td><td>39,6</td><td>30,6</td></tr>
+                <tr><td>2022</td><td>26,9</td><td>29,4</td><td>38,4</td><td>32,0</td></tr>
+                <tr><td>2023</td><td>31,5</td><td>28,2</td><td>41,3</td><td>35,8</td></tr>
+                <tr><td>2024</td><td>30,5</td><td>32,6</td><td>40,3</td><td>32,5</td></tr>
+                <tr><td>2025</td><td>33,7</td><td>35,1</td><td>40,6</td><td>36,1</td></tr>
+                <tr class="yr2026"><td>2026</td><td>32,9 <span class="delta-neg">▼ 2,4%</span></td><td class="na">s/d</td><td>38,9 <span class="delta-neg">▼ 4,2%</span></td><td>35,9 <span class="delta-neg">▼ 0,6%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbo-section">
+            <div class="tbo-section-title">Vacas en ordeñe (VO)</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>615</td><td>526</td><td>1.972</td><td>465</td></tr>
+                <tr><td>2022</td><td>675</td><td>490</td><td>2.175</td><td>428</td></tr>
+                <tr><td>2023</td><td>746</td><td>462</td><td>2.443</td><td>525</td></tr>
+                <tr><td>2024</td><td>706</td><td>359</td><td>2.467</td><td>515</td></tr>
+                <tr><td>2025</td><td>822</td><td>373</td><td>2.561</td><td>587</td></tr>
+                <tr class="yr2026"><td>2026</td><td>871 <span class="delta-pos">▲ 5,9%</span></td><td class="na">s/d</td><td>3.046 <span class="delta-pos">▲ 18,9%</span></td><td>582 <span class="delta-neg">▼ 0,9%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbo-section">
+            <div class="tbo-section-title">Litros diarios totales</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>16.347</td><td>17.096</td><td>78.030</td><td>14.238</td></tr>
+                <tr><td>2022</td><td>18.128</td><td>14.414</td><td>83.501</td><td>13.673</td></tr>
+                <tr><td>2023</td><td>23.511</td><td>13.048</td><td>100.946</td><td>18.362</td></tr>
+                <tr><td>2024</td><td>21.526</td><td>11.712</td><td>99.469</td><td>16.732</td></tr>
+                <tr><td>2025</td><td>27.700</td><td>13.100</td><td>104.001</td><td>21.174</td></tr>
+                <tr class="yr2026"><td>2026</td><td>28.663 <span class="delta-pos">▲ 3,5%</span></td><td class="na">s/d</td><td>118.550 <span class="delta-pos">▲ 14,0%</span></td><td>20.902 <span class="delta-neg">▼ 1,3%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /month-feb -->
+
+<!-- ====================== MARZO ====================== -->
+<div class="month-panel active" id="month-mar">
+
+  <div class="tab-panel active" id="mar-resumen">
+    <div class="grid">
+      <div class="card oth full">
+        <div class="card-head">💬 Novedades y temas propuestos</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Los números empiezan a apretar; con alquiler de 14/15 qq la ecuación se ajusta.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Varias empresas llamaron consultando por alquiler agrícola y maní. ¿A qué valor deja de justificarse hacer la agricultura propia?</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><b>Empresario:</b> ¿Conviene tomar deuda en dólares para insumos o vacas? Inoculación de girasol (UPL + Stoller). Fertilización con urea en girasol.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><b>Técnico:</b> Reconfigurando estrategia de herbicidas — uso de Enlist para malezas resistentes, especialmente yuyo colorado.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val"><b>Empresario:</b> Taller liquidaciones. <b>Técnico:</b> Estrategia selectiva (reseteo total vs. directo). Recorrida cosecha soja/maíz. Auditoría fumigadoras. ¿MB en fertilización de fina?</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val"><b>Empresario:</b> Precios de insumos. <b>Técnico:</b> Aplicación selectiva con drone y cámara multiespectral.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Maíces y soja con muy buena pinta. Bastante barro acumulado en el tambo.</span></div>
+      </div>
+      <div class="card agro full">
+        <div class="card-head">🌻 Cosecha girasol 2025/26</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">LR terminado 3,1 qq · Garre ~3 qq · Calidad sin confirmar.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Terminado. Syn 3969: 4.050kg · Syn 3979 hol.: 3.570kg.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">95% cosechado, 2.900kg · Todo vendido u$s360.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">100% cosechado · 19,3 qq.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">492/628ha. Mejor: La Estrella 3.068kg · El Socorro 2.600 · La Hebe TL 2.200. Quedan 2 lotes. Sin calidad.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: 2.850kg / 570ha (terminado). GdA: 3.350kg / 450ha (faltan 150ha).</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">100% cosechado · 380ha · 3.075kg prom netos. 50% con análisis, factor 120,83.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Finalizado · 3.500 kg/ha.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">75% cosechado · 3.400kg/ha prom (3.200–3.700).</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">100% cosechado · 3.288kg/ha / 189ha.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">100% cosechado · 3.818 tn/ha.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">55% cosechado. Variable por viento/piedra: 2.200 (30% daño) a 2.750. Calidad humedad bien, sin dato grasa/acidez.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🌾 Cultivos de cobertura</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Bastante superficie; centeno.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Vicia/centeno en SJ: 30ha.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Verdeos doble propósito: 175ha sobre girasol.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Centeno 120ha · Vicia 30ha.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">485ha centeno (verdeo + cobertura).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">GdA 201ha centeno · Trap 124ha centeno.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">128ha centeno sobre maíz1 (drone) + 334ha verdeos sembradora sobre gsol + 25ha cobertura en lomas.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">60–150ha. Analizando vicia + centeno.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">490ha (50% drone ya sembrado, 50% sembradora).</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">118ha triticale (~100ha a silaje, resto en lomas).</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Centeno 270ha (bajos + consumo vacas) · Vicia 20ha.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Sin cobertura. Solo 60ha centeno ganadero.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">📊 Comercialización — campaña 2025/26</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Gsol 40% (~$360/70) · Soja 10% ($325) · Maíz 10% ($195).</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Gsol 30% · Trigo 90% · Soja 27%.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Gsol 100% vendido.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Maíz 150tn · u$s185.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Trigo canje $200+9 (ACA). Gsol 90tn $360+10 (Cargill La Porteña). Soja canje abril.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Gsol: GdA 83% $365 · Trap 80% $367. Soja: GdA 35% $310 · Trap 40% $310.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Soja 420tn $320 (27%) · M1 1.260tn $186 (32%) · Gsol 600tn $330+25 + 60tn $350+15 + 500tn a fijar (ACA).</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Trigo 29,8% $196,5 · Maíz 39,1% $193,8 · Gsol 62,3% $352,6 · Soja 58,6% $307,3 · Maní 48,2% $700. Trigo 26/27: 390tn $214,2.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Trigo 100% · Cebada 100% · Gsol 100% · Maíz 0% · Soja 5% (forward mayo).</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🧪 Insumos 2026/27</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Nada. Plan: glifo + 2,4-D + fomesaf.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Nada; esperando Expo.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">MAP verdeos + semillas pastura. Deuda anterior: u$s37.000 (Agropak).</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">MAP 60tn $898/tn (puerto) · Microessential 30tn $1.052 (campo) · Urea 30tn $619 (puerto). Glifo control max 7.000lt + residuales cerrados. TC bajo + diversificación.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Glifo granulado $5,55/kg · Maíz Pioneer $6,40/kg · Gesaprim 90 $6,20/l · Dual Gold + Sulfentrazone $17,8/l · Maíz $115/bolsa.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Analizando condiciones Expo.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Nada. Consulta al grupo sobre mercado de fertilizantes.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">Glifosato.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">Algo de glifosato.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Precio fijado fertilizante verdeos/pasturas. Semillas verdeos compradas. Agroquímicos varios. Gruesa: nada aún.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Algo de glifosato + Harvest More.</span></div>
+      </div>
+      <div class="card gan">
+        <div class="card-head">🐄 Cría — tendencia</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="cb up">↑ Crecer algo</span> — V: 380/90 m y h $6.500 (180kg, 30y60d).</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="cb up">↑ Crecer</span> — V: Nov. Hol. 405kg $4.330.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="cb up">↑ Crecer</span> — Huelen 2.500 vaq. V: 461 vaq u$s1.461 + 150 novillitos Salta 280kg $5.500.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="cb up">↑ Crecer</span> (reposición + 1 jaula más; 3a jaula en análisis). V: 113 machos 213kg $6.650 + 91 hembras 193kg $6.200 (campo a campo).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="cb up">↑ Crecer</span> (aumentando % reposición). C: Trap 120 terneras 215kg $6.250 + GdA 291 novillos 357kg $5.483 (Procampo USD 0% 180d) + 280 terneras 201kg $6.600.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="cb dn">↓ En proceso de decisión — en principio se reduce</span>. C: vaca preñada cut $1,45–1,75M (buscando $1,59M prom). "Hoy no da nada."</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val"><span class="cb up">↑ Crecer</span> — Sin compras ni ventas.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="cb up">↑ Crecer cuidadosamente</span> — C: vaq. tambo. V: 85 terneros Angus 215kg $6.200 + 54 terneros Holando 126kg $4.870.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val"><span class="cb dn">↓ Decrecer</span> — Liquidar 185 vacas del plantel, incorporar 150 vacas de 2da/3ra parición.</span></div>
+      </div>
+      <div class="card fin">
+        <div class="card-head">💰 Situación financiera</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="fb reg">~ Regular</span> — requiere ingresar gsol. 90% canje contado.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="fb ok">✓ Buena</span></span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="fb ok">✓ Buena</span> — Galicia Nera 1 año 3,5% + u$s48.000 270d tasa 0 agroquímicos Salta.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="fb reg">~ Ajustada</span></span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="fb ok">✓ Buena</span> — próximos meses se viene duro: vencimientos tarjeta, Nera y crédito.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="fb reg">~ Igual que reunión Rosen</span></span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="fb ok">✓ Óptima</span> — por liquidación hacienda, viendo posicionamiento.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val"><span class="fb mal">✕ Difícil</span> — SISA 3. Larti 150M ARS 0,5% + Galicia 30k USD 8% 1 mes para cubrirlo.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val"><span class="fb ok">✓ Buena</span> — gestionando crédito para pulverizadora.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val"><span class="fb reg">~ Justa</span> — día a día, venimos bien.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="fb ok">✓ Buena</span> — analizando línea Expo para inversiones.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos.</span></div>
+      </div>
+      <div class="card fin">
+        <div class="card-head">🔧 Inversiones</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Informada en reunión anterior.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Nada.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Casilla de operaciones · Chimango.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">NH T8350 con Berger, crédito Nación 2,75% USD 4 años (~u$s190k diferencia). Compra vacas preñadas/vaquillonas (con crédito, en análisis).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: extrusoras de soja 240–480 kg/h trifásicas (en análisis).</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Condiciones Expo: cambio tractor, rolo, paratil, etc.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">Pulverizadora · camioneta · tractor · agua · alambres.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Comprado: pala de arrastre. Por comprar: celdas tambo + tractor mixer (JD o Case Puma).</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Ninguna.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="mar-empresa">
+    <div class="emp-grid" id="mar-emp-grid">
+      <div class="emp-sel active" onclick="selEmp('mar','MBSA',this)"><div class="emp-ico">MB</div><div><div class="emp-nm">MBSA</div><div class="emp-sub">13 mar · 20:15</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','C4',this)"><div class="emp-ico">C4</div><div><div class="emp-nm">C4</div><div class="emp-sub">16 mar · 06:30</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','OASA',this)"><div class="emp-ico">OA</div><div><div class="emp-nm">OASA</div><div class="emp-sub">16 mar · 12:29</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','SH',this)"><div class="emp-ico">SH</div><div><div class="emp-nm">SH</div><div class="emp-sub">16 mar · 16:09</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','LEL',this)"><div class="emp-ico">LEL</div><div><div class="emp-nm">LEL</div><div class="emp-sub">16 mar · 23:05</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','GdA',this)"><div class="emp-ico">GdA</div><div><div class="emp-nm">GdA y Trap</div><div class="emp-sub">17 mar · 10:56</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','ENDSA',this)"><div class="emp-ico">EN</div><div><div class="emp-nm">ENDSA</div><div class="emp-sub">17 mar · 19:52</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','Lepoma',this)"><div class="emp-ico">Lp</div><div><div class="emp-nm">Lepoma</div><div class="emp-sub">17 mar · 18:43</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','ENT',this)"><div class="emp-ico">ENT</div><div><div class="emp-nm">ENT</div><div class="emp-sub">18 mar · 08:42</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','AL',this)"><div class="emp-ico">AL</div><div><div class="emp-nm">AL</div><div class="emp-sub">18 mar · 09:24</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','IWSA',this)"><div class="emp-ico">IW</div><div><div class="emp-nm">IWSA</div><div class="emp-sub">18 mar · 09:25</div></div></div>
+      <div class="emp-sel" onclick="selEmp('mar','AMSA',this)"><div class="emp-ico">AM</div><div><div class="emp-nm">AMSA</div><div class="emp-sub">18 mar · 10:48</div></div></div>
+    </div>
+    <div id="mar-details"></div>
+  </div>
+
+  <div class="tab-panel" id="mar-agro">
+    <div class="grid">
+      <div class="card agro full">
+        <div class="card-head">🌻 Cosecha girasol 2025/26</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">LR terminado 3,1 qq · Garre ~3 qq · Calidad sin confirmar.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Terminado. Syn 3969: 4.050kg · Syn 3979 hol.: 3.570kg.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">95% cosechado · 2.900kg · Todo vendido u$s360.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">100% cosechado · 19,3 qq.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">492/628ha. La Estrella 3.068 · El Socorro 2.600 · La Hebe TL 2.200. Prefirió 50k semillas/ha sobre 60k. Quedan 2 lotes.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: 2.850kg / 570ha. GdA: 3.350kg / 450ha (faltan 150ha).</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">100% cosechado · 380ha · 3.075kg prom neto · factor 120,83 (50% analizado).</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Finalizado · 3.500 kg/ha.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">75% cosechado · 3.400kg/ha (3.200–3.700).</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">100% cosechado · 3.288kg/ha / 189ha.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">100% cosechado · 3.818 tn/ha.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">55% cosechado. Variable: 2.200 (daño) a 2.750. Calidad humedad bien. Sin dato grasa/acidez.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🌾 Cultivos de cobertura</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Bastante superficie; centeno.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Vicia/centeno en SJ: 30ha.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Verdeos doble propósito: 175ha sobre gsol.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Centeno 120ha · Vicia 30ha.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">485ha centeno (verdeo + cobertura).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">GdA 201ha centeno · Trap 124ha centeno.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">128ha centeno (drone) + 334ha verdeos sembradora gsol + 25ha cobertura lomas.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">60–150ha. Analizando vicia + centeno.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">490ha (50% drone sembrado, 50% sembradora).</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">118ha triticale (~100ha silaje, resto lomas).</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Centeno 270ha (bajos + consumo vacas) · Vicia 20ha.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Sin cobertura. Solo 60ha centeno ganadero.</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">📊 Comercialización</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Gsol 40% (~$360/70) · Soja 10% ($325) · Maíz 10% ($195).</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Gsol 30% · Trigo 90% · Soja 27%.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Gsol 100% vendido.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val">Maíz 150tn u$s185.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">Trigo canje $200+9 ACA · Gsol 90tn $360+10 Cargill La Porteña · Soja canje abril.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Gsol: GdA 83% $365 · Trap 80% $367. Soja: GdA 35% $310 · Trap 40% $310.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Soja 420tn $320 (27%) · M1 1.260tn $186 (32%) · Gsol 600tn $330+25 + 60tn $350+15 + 500tn a fijar ACA.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Trigo 29,8% $196,5 · Maíz 39,1% $193,8 · Gsol 62,3% $352,6 · Soja 58,6% $307,3 · Maní 48,2% $700.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Trigo 100% · Cebada 100% · Gsol 100% · Maíz 0% · Soja 5% (forward mayo).</span></div>
+      </div>
+      <div class="card agro">
+        <div class="card-head">🧪 Insumos 2026/27</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Nada. Plan: glifo + 2,4-D + fomesaf.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Nada; esperando Expo.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">MAP verdeos + semillas pastura. Deuda anterior: u$s37.000 (Agropak).</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">MAP 60tn $898/tn · Microessential 30tn $1.052 · Urea 30tn $619. Glifo 7.000lt cerrado. Residuales campos fijos. Motivación: TC bajo + diversificación.</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Glifo granulado $5,55/kg · Maíz Pioneer $6,40/kg · Gesaprim 90 $6,20/l · Dual Gold/Sulfentrazone $17,8/l · Maíz $115/bolsa.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Analizando condiciones Expo.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Nada. Consulta al grupo sobre fertilizantes. Evalúa vicia para maíz tardío.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">Glifosato.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val">Algo de glifosato.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Precio fijado fertilizante verdeos/pasturas. Semillas verdeos compradas. Agroquímicos varios. Gruesa: nada aún.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val">Algo de glifosato + Harvest More.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="mar-gan">
+    <div class="grid">
+      <div class="card gan">
+        <div class="card-head">📈 Tendencia en cría</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="cb up">↑ Crecer algo</span></span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="cb up">↑ Crecer</span></span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="cb up">↑ Crecer</span> — Huelen 2.500 vaq. + vacas negocio Salta/DL</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="cb hold">→ Mantener</span></span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="cb up">↑ Crecer</span> — reposición + 1 jaula más; 3a jaula en análisis</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="cb up">↑ Crecer</span> — aumentando % de reposición</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="cb dn">↓ En principio se reduce</span> — "hoy no da nada"</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val"><span class="cb up">↑ Crecer</span></span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="cb up">↑ Crecer cuidadosamente</span></span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val"><span class="cb dn">↓ Decrecer</span> — liquidar 185 vacas; incorporar 150 de 2da/3ra parición</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos.</span></div>
+      </div>
+      <div class="card gan full">
+        <div class="card-head">🛒 Movimientos de hacienda</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><b>V:</b> 380/90 m y h $6.500 (180kg, 30y60d). Sin compras.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><b>V:</b> Nov. Hol. 405kg $4.330. Sin compras.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><b>C:</b> 120 terneros/as 170kg $6.600 Nera 360d/3,5% USD. <b>V:</b> 461 vaquillonas u$s1.461 + 150 novillitos Salta 280kg $5.500.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><b>V:</b> 113 machos 213kg $6.650 + 91 hembras 193kg $6.200 (libre gastos, campo a campo).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><b>C:</b> Trap: 120 terneras 215kg $6.250 (30y60) · GdA: 291 novillos 357kg $5.483 (Procampo USD 0% 180d) + 280 terneras 201kg $6.600. <b>V:</b> Trap: 11 nov. 380kg $5.100 + 13 vaq 340kg $5.310. GdA: 4 MEJ 410kg $3.000 + 7 vaq 350kg $5.300 + 2 toros 690kg $3.200.</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><b>C:</b> Vaca preñada cut $1,45–1,75M (buscando $1,59M prom). Sin ventas informadas.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><b>C:</b> Vaquillonas de tambo. <b>V:</b> 85 terneros Angus 215kg $6.200 (4% desbaste) + 54 terneros Holando 126kg $4.870 (3% desbaste).</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin compras ni ventas aún.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="mar-fin">
+    <div class="grid">
+      <div class="card fin full">
+        <div class="card-head">💰 Situación financiera y financiación</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val"><span class="fb reg">~ Regular</span> — requiere ingresar gsol. 90% canje contado.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val"><span class="fb ok">✓ Buena</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val"><span class="fb ok">✓ Buena</span> — Galicia Nera 1 año 3,5% + u$s48.000 270d tasa 0 (agroquímicos Salta).</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val"><span class="fb reg">~ Ajustada</span> — sin financiación.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val"><span class="fb ok">✓ Buena</span> — próximos meses vencimientos duros (tarjeta, Nera, crédito).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val"><span class="fb reg">~ Igual reunión Rosen</span></span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val"><span class="fb ok">✓ Óptima</span> — por liquidación hacienda. Tomando condiciones Expo.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val"><span class="fb mal">✕ Difícil</span> — SISA 3. Larti 150M ARS 0,5% + Galicia 30k USD 8% 1 mes para cubrirlo.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val"><span class="fb ok">✓ Buena</span> — gestionando crédito para pulverizadora.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val"><span class="fb reg">~ Justa</span> — día a día, tranquilo.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val"><span class="fb ok">✓ Buena</span> — analizando línea Expo para inversiones.</span></div>
+        <div class="erow"><span class="etag">AMSA</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos.</span></div>
+      </div>
+      <div class="card fin full">
+        <div class="card-head">🔧 Inversiones recientes / previstas</div>
+        <div class="erow"><span class="etag">MBSA</span><span class="val">Informada en reunión anterior.</span></div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Nada.</span></div>
+        <div class="erow"><span class="etag">OASA</span><span class="val">Casilla de operaciones · Chimango.</span></div>
+        <div class="erow"><span class="etag">SH</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Ninguna.</span></div>
+        <div class="erow"><span class="etag">LEL</span><span class="val">NH T8350 con Berger, crédito Nación 2,75% USD 4 años (~u$s190k diferencia por entrega de usado). Compra vacas preñadas/vaquillonas (analizando con crédito).</span></div>
+        <div class="erow"><span class="etag">GdA/Trap</span><span class="val">Trap: extrusoras de soja 240–480 kg/h trifásicas (en análisis).</span></div>
+        <div class="erow"><span class="etag">ENDSA</span><span class="val">Condiciones Expo: cambio tractor, rolo, paratil, etc.</span></div>
+        <div class="erow"><span class="etag">Lepoma</span><span class="val">Nada.</span></div>
+        <div class="erow"><span class="etag">ENT</span><span class="val">Pulverizadora · camioneta · tractor · agua · alambres.</span></div>
+        <div class="erow"><span class="etag">AL</span><span class="val class=empty" style="color:var(--muted);font-style:italic">Sin datos.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Comprado: pala de arrastre tractor. Por comprar: celdas tambo + tractor mixer (entre JD y Case Puma).</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="mar-tbo">
+    <div class="grid">
+      <div class="card tbo full">
+        <div class="card-head">💬 Novedades de tambo</div>
+        <div class="erow"><span class="etag">C4</span><span class="val">Un año que permite guardar mucha comida. Finalizando obra del tambo, bastante barro acumulado.</span></div>
+        <div class="erow"><span class="etag">IWSA</span><span class="val">Viendo si sale línea de crédito para encarar celda (Osvaldo Varela). Cambio tractor mixer: entre John Deere o Case Puma (valores similares).</span></div>
+      </div>
+      <div class="card tbo full">
+        <div class="card-head">📊 Datos productivos — cerrados enero de cada año</div>
+        <div style="padding:16px 18px;">
+          <div class="tbo-section">
+            <div class="tbo-section-title">Lt / VO / día</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>25,1</td><td>32,1</td><td>37,8</td><td>31,6</td></tr>
+                <tr><td>2022</td><td>26,2</td><td>31,6</td><td>38,1</td><td>29,2</td></tr>
+                <tr><td>2023</td><td>29,2</td><td>28,3</td><td>39,2</td><td>34,0</td></tr>
+                <tr><td>2024</td><td>29,7</td><td>31,7</td><td>37,8</td><td>32,2</td></tr>
+                <tr><td>2025</td><td>29,9</td><td>34,0</td><td>37,2</td><td>34,3</td></tr>
+                <tr class="yr2026"><td>2026</td><td>30,0 <span class="delta-pos">▲ 0,3%</span></td><td>34,2 <span class="delta-pos">▲ 0,6%</span></td><td class="na">s/d</td><td>35,2 <span class="delta-pos">▲ 2,6%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbo-section">
+            <div class="tbo-section-title">Vacas en ordeñe (VO)</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>606</td><td>535</td><td>1.881</td><td>419</td></tr>
+                <tr><td>2022</td><td>637</td><td>490</td><td>1.927</td><td>394</td></tr>
+                <tr><td>2023</td><td>696</td><td>453</td><td>2.218</td><td>478</td></tr>
+                <tr><td>2024</td><td>683</td><td>346</td><td>2.240</td><td>486</td></tr>
+                <tr><td>2025</td><td>767</td><td>361</td><td>2.727</td><td>523</td></tr>
+                <tr class="yr2026"><td>2026</td><td>848 <span class="delta-pos">▲ 10,6%</span></td><td>458 <span class="delta-pos">▲ 26,9%</span></td><td class="na">s/d</td><td>544 <span class="delta-pos">▲ 4,0%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbo-section">
+            <div class="tbo-section-title">Litros diarios totales</div>
+            <table class="tbo-table">
+              <thead><tr><th>Año</th><th>AL</th><th>LA</th><th>LP</th><th>C4</th></tr></thead>
+              <tbody>
+                <tr><td>2021</td><td>15.205</td><td>18.550</td><td>71.099</td><td>13.222</td></tr>
+                <tr><td>2022</td><td>16.706</td><td>15.463</td><td>73.467</td><td>11.240</td></tr>
+                <tr><td>2023</td><td>20.314</td><td>12.793</td><td>86.961</td><td>15.995</td></tr>
+                <tr><td>2024</td><td>20.287</td><td>10.974</td><td>84.739</td><td>15.650</td></tr>
+                <tr><td>2025</td><td>22.948</td><td>12.275</td><td>101.440</td><td>17.929</td></tr>
+                <tr class="yr2026"><td>2026</td><td>25.425 <span class="delta-pos">▲ 10,8%</span></td><td>15.736 <span class="delta-pos">▲ 28,2%</span></td><td class="na">s/d</td><td>19.131 <span class="delta-pos">▲ 6,7%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /month-mar -->
+</div><!-- /container -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-head" id="modal-head">
+      <span id="modal-title"></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const EMP_DATA = {
+  feb: {
+    C4:    { ico:'C4',  fecha:'22 feb 2026 · 10:17', temas:'Técnico: Buena convocatoria a la intermedia de engorde.', gruesa:'Bien, necesitando agua. Se empezaron a marcar las sojas.', cc:'Vicia y centeno según ambiente.', comer:'Gsol 45% u$s378 · Soja 27% u$s315 · Trigo 70% u$s194.', cria_est:'Buen estado, comiendo pasturas. Destete próxima semana.', cria_tend:'up:Crecer (o recuperar stock anterior)', mov:'V: 65 machos $6.500 (180–200kg) · 25 Nov. Overos 394kg $4.410.', tambo:'En obra: agregando 8 puntos más de ordeñe e instalando pasteurizador.', fin:'ok:Buena', finan:'Nada.', inver:'Balanza individual Farmequip $5,5M. Evaluando Gallagher full u$s6.900.' },
+    LEL:   { ico:'LEL', fecha:'22 feb 2026 · 22:44', gruesa:'Bueno a muy bueno. Lomas algo estresadas. Maíz húmedo temp. 10.600kg seco. Gsol en ~12/15 días.', cc:'500ha centeno (verdeo y cobertura). Muy satisfechos con Hebe en Tres Lomas.', comer:'Queda algo de maíz. Algo de trigo y gsol común.', cria_est:'Terneras ~200kg. Van a salir a ofrecerlas.', cria_tend:'up:Crecer (si siembran 70ha pastura y hay crédito)', fin:'ok:Buena', finan:'Ninguno.', inver:'Cambio tractor 230→270CC (Expo). Más vientres.' },
+    MBSA:  { ico:'MB',  fecha:'23 feb 2026 · 09:28', temas:'Preocupado por valor del dólar — ¿conviene vender y pasar a tasa?', gruesa:'Con la lluvia de ayer: ~3tn gsol, 3,5 soja, 7,5 maíz.', cc:'Córdoba: contornos ~250ha.', comer:'Sin 24/25. Gsol 30% · Soja 5% · Maíz 5%.', cria_est:'Bien. Destete ~400 cabezas.', cria_tend:'up:Crecer — vende invernada y capitaliza ~250 vaquillonas', mov:'V: Ofertadas 400 M y H ~150/160kg promedio.', fin:'ok:Buena', finan:'Contado o canje.', inver:'Compra campo 640ha Girodías + venta Alvear 320ha (210 sembrables).' },
+    GdA:   { ico:'GdA', fecha:'23 feb 2026 · 15:45', temas:'Técnico: ¿Paraquat con drones para secar gsol? Lotes con yuyo colorado — ¿Enlist o Calisto?', gruesa:'Gsol entregándose en ~1 semana. Maíz temp. 32–33tn MV. Soja: 3,5tn 1ra / 1,8–2,0tn 2da.', cc:'Trapalcó: 124ha centeno · Golpe de Agua: 254ha centeno.', comer:'Sin remanente 24/25. Trap: trigo 85% · gsol 54% · maíz 13% · soja 38%. GdA: trigo 100% · gsol 57% · maíz 22% · soja 34%.', cria_est:'Buena condición corporal en ambos. Pasturas y llorones. Solo tactos IATF.', cria_tend:'up:Crecer', mov:'C: Trap: 70 terneras $5.255/kg 208kg 30y60. V: Trap: 41 novillos 433kg $4.400. GdA: 14ntos 361kg $4.700; 10ntos 430kg $4.400; 30 vaq. 303kg $4.700–4.800.', fin:'reg:Trap: bien / GdA: ajustada', finan:'GdA: venta echeqs + crédito Bice $210M para vaquillonas.', inver:'Trapalcó: molino extrusor plásticos + máquina postes/varillas.' },
+    OASA:  { ico:'OA',  fecha:'23 feb 2026 · 17:14', gruesa:'Gsol bueno/muy bueno 2,8–3tn. Maíz 1ra 9–10tn. Maíz tardío esperando agua. Soja 3,7–4tn.', cc:'Sin cobertura. Verdeos avena/centeno sobre girasol.', comer:'Sin 24/25. Gsol 330tn 67% ($350) · Maíz 600tn 24% ($180) · Soja 120tn 16% ($310).', cria_tend:'up:Crecer — capitalización vaquillonas Ballester + vacas negocio Don Leopoldo', mov:'C: Norte terneros/as 170kg $6.210 (60d). V: Novillitos 310kg $4.900 (30y60d).', fin:'ok:Buena', finan:'Ninguna.', inver:'Chimango · tolva semillera · desmalezadora · tractor · casilla+balanza Huelen.', extra:'Evaluando salir de hacienda en Salta para compra de tierra.' },
+    ENDSA: { ico:'EN',  fecha:'24 feb 2026 · 18:10', gruesa:'Buenos en general; lomas afectadas. Gsol 2,8/3 · M1 8,5 · Soja 3,5/3,8. Tardío aún falta.', cc:'Verdeos. Posible cobertura puntual en loma.', cria_est:'PBA: desteto, comiendo comedero. Recría entregada con muy buen resultado. SALTA: sin lluvias (270mm), decidió oxigenar con venta.', cria_tend:'up:+15% vaca preñada / dn:-20% rodeo general', mov:'C: NOA 70/30 MyH $5.400 180kg + PBA vaca cut preñada $1,45–1,75M. V: Recría NOA $4.850 <300kg, entregas diferidas.', fin:'ok:Óptima — cobró capitalización hacienda', finan:'USD al 7% para cubrir vencimientos de hacienda.', inver:'Balanza camión instalada. 2 casillas + balanzas + bastón. Equipo pastura de corte.' },
+    RyJLC: { ico:'Ry',  fecha:'24 feb 2026 · 22:44', temas:'Técnico: Varios lotes de soja con mucho yuyo colorado. ¿Inversiones en agua? ¿Tanque australiano o de plástico?', gruesa:'Todo muy bueno, salvo algún gsol o maíz puntual. Maíz húmedo ~8.000kg seco.', cc:'Planificando más situaciones y más has que el año pasado.', comer:'Mínimos remanentes para venta.', cria_est:'Bueno en bajos y llorones. Tacto aún no hecho.', cria_tend:'hold:Mantener', mov:'C: 70 terneras $4.800 180kg · 105 vacas vacías $2.600 437kg · 38 vac. preñadas $1,6M. V: Novillitos $4.430 420kg.', fin:'ok:Buena', finan:'Nada.', inver:'Motoniveladora importada. Expo: tractores 15.000hs + embolsadora + monotolva. Carretón retro.' },
+    Lepoma:{ ico:'Lp',  fecha:'25 feb 2026 · 08:34', temas:'Post cosecha gsol: ¿barbecho o rolo? Cálculo eléctrico (bajó boleta a la mitad). Automatización control de documentos.', gruesa:'Buenos en general. Gsol 2,8/3 · Maíz 8,5 · Soja 3,8. Tardío sin número.', cc:'Centeno en partes altas para reducir erosión.', fin:'reg:Bien, pero se complica 15–30 días por SISA', finan:'Ninguna. Incorporó Cocos para operatoria de granos.' },
+    SH:    { ico:'SH',  fecha:'25 feb 2026 · 11:43', gruesa:'Muy buenos. Gsol conf. 2.300kg. M1 8.500 / MT 7.500. Soja1t 3.800 / Soja1td 3.200 / Soja2 2.800.', cc:'~120ha centeno · 30ha vicia.', comer:'Todo 24/25 vendido. Soja 150tn u$s315 · Maíz 210tn u$s185 (ACA).', cria_est:'Buen estado. Destete esta semana. Agropiro en bajo.', cria_tend:'hold:Mantener', mov:'Sin compras ni ventas.', fin:'reg:Ajustada', finan:'—', inver:'2 tolvas 10tn Impagro (12 cheques).' },
+    AMSA:  { ico:'AM',  fecha:'25 feb 2026 · 11:46', gruesa:'Buenos. Gsol ciclo largo atrasado. Sojas y maíces muy buenos a regulares; mejor de lo esperado.', cc:'50ha centeno para verdeo o cobertura.', comer:'Remanente 24/25: gsol 100tn + maíz 1.300tn. Nuevo: cebada 90% · trigo 54% · gsol 37% · soja 28% · maíz 16%.', cria_est:'Vacas en campo natural, racionando con maíz. Liquidación total del rodeo para reponer con vaca preñada de calidad.', cria_tend:'up:Reposición total con vaca preñada según oferta forrajera', fin:'ok:Buena — hay liquidez', finan:'Nada.', inver:'16ha compradas. Cambio maicero→Allochis. Toyota de Diego→Amarok.' },
+    IWSA:  { ico:'IW',  fecha:'25 feb 2026 · 12:39', temas:'Empresario: ¿El negocio de cría es viable? ¿La situación actual es pasajera? — Institucional: ¿Qué opinan del coordinador?', gruesa:'Se ven bien; faltó agua. Silo maíz: prom. 44tn/ha.', cc:'~300ha (récord). Vicia previa a maíz demorado: muy bien.', comer:'Vendió todas las existencias antes de cierre de balance.', cria_est:'Entre bueno y muy bueno.', cria_tend:'up:Crecer lentamente (para no pasarse como últimos 3 años)', mov:'C: Vaq. tambo semen sexado/conv. 5.500lts. V: Terneros cría 213kg $6.200; ternero holando 120kg $5.000.', tambo:'Evaluando celda de tambo + cambio de bretes. ~$150M.', fin:'reg:Justa antes de cosecha — venimos bien', finan:'Viendo financiación chica en USD al 9% por 1 año.', inver:'Celda tambo + cambio bretes. ~$150M.' }
+  },
+  mar: {
+    MBSA: { ico:'MB', fecha:'13 mar 2026 · 20:15', temas:'Los números empiezan a apretar; con alquiler de 14/15 qq la ecuación se ajusta.', gruesa:'Gsol terminado en LR a 3,1 qq. Garre también ~3 qq. Calidad aún sin confirmar.', cc:'Bastante superficie; centeno.', comer:'Gsol 40% (~$360/70 prom.) · Soja 10% ($325) · Maíz 10% ($195).', insumos:'Nada comprado. Idea: cubrir glifo + 2,4-D + fomesaf y ver evolución.', cria_tend:'up:Crecer algo', mov:'V: 380/90 machos y hembras $6.500 (180kg, 30 y 60 días). Sin compras.', fin:'reg:Buena, pero requiere ingresar girasol', finan:'Canje contado (90% campaña).', inver:'Informada en reunión anterior.' },
+    C4:   { ico:'C4', fecha:'16 mar 2026 · 06:30', gruesa:'Girasol terminado. Syn 3969: 4.050kg · Syn 3979 hol.: 3.570kg.', cc:'Vicia/centeno en SJ: 30ha.', comer:'Girasol 30% · Trigo 90% · Soja 27%.', insumos:'Nada aún; esperando condiciones de Expo.', extra:'Maíces y soja: muy buena pinta. Bastante barro acumulado en el tambo.', cria_tend:'up:Crecer', mov:'V: Nov. Hol. 405kg $4.330.', fin:'ok:Buena', finan:'Nada.', inver:'Finalizando obra del tambo.' },
+    OASA: { ico:'OA', fecha:'16 mar 2026 · 12:29', temas:'Varias empresas llamaron consultando por alquiler agrícola y maní.', gruesa:'90% cosechado. Rinde promedio: 2.900kg.', cc:'Verdeos doble propósito: 175ha sobre girasol.', comer:'Girasol 100% vendido.', insumos:'MAP para verdeos + semillas de pastura. Saldo anterior: u$s37.000 (Agropak).', cria_tend:'up:Crecer — vaquillonas a 2.500 en Huelen + vacas negocio Salta/DL', mov:'C: 120 terneros/as 170kg $6.600 Nera 360d/3,5% USD. V: 550 vaquillonas u$s1.500 prom.', fin:'ok:Buena', finan:'Banco Macro USD, tasa 0%, 270 días, para compra de pastura (Salta).', inver:'Casilla de operaciones · Chimango.' },
+    SH:   { ico:'SH', fecha:'16 mar 2026 · 16:09', gruesa:'Gir. conf. 100% cosechado. 19,3 qq.', cc:'Centeno 120ha · Vicia 30ha.', comer:'Maíz: 150tn a u$s185.', insumos:'—', cria_tend:'hold:Mantener', fin:'reg:Ajustada', finan:'Ninguna.', inver:'Ninguna.' }
+  }
+};
+
+const FIELD_META = {
+  temas:     { label:'💬 Novedades / temas', cat:'oth' },
+  gruesa:    { label:'🌻 Cosecha gruesa',    cat:'agro' },
+  cc:        { label:'🌾 Coberturas',         cat:'agro' },
+  comer:     { label:'📊 Comercialización',  cat:'agro' },
+  insumos:   { label:'🧪 Insumos 2026/27',   cat:'agro' },
+  cria_est:  { label:'🐄 Estado cría',       cat:'gan'  },
+  cria_tend: { label:'📈 Tendencia cría',    cat:'gan'  },
+  mov:       { label:'🛒 Compras / Ventas',  cat:'gan'  },
+  tambo:     { label:'🐮 Tambo',             cat:'tbo'  },
+  fin:       { label:'💰 Financiero',        cat:'fin'  },
+  finan:     { label:'🏦 Financiación',      cat:'fin'  },
+  inver:     { label:'🔧 Inversiones',       cat:'fin'  },
+  extra:     { label:'💬 Comentario',        cat:'oth'  }
+};
+
+function criaHtml(val) {
+  if (!val) return '<span style="color:var(--muted);font-style:italic">Sin datos.</span>';
+  const [type, text] = val.split(':');
+  const cls = type==='up' ? 'up' : type==='dn' ? 'dn' : 'hold';
+  const arrow = type==='up' ? '↑' : type==='dn' ? '↓' : '→';
+  return `<span class="cb ${cls}">${arrow} ${text}</span>`;
+}
+
+function finHtml(val) {
+  if (!val) return '<span style="color:var(--muted);font-style:italic">Sin datos.</span>';
+  const [type, text] = val.split(':');
+  const cls = type==='ok' ? 'ok' : type==='mal' ? 'mal' : 'reg';
+  const sym = type==='ok' ? '✓' : type==='mal' ? '✕' : '~';
+  return `<span class="fb ${cls}">${sym} ${text}</span>`;
+}
+
+function renderVal(key, val) {
+  if (key === 'cria_tend') return criaHtml(val);
+  if (key === 'fin') return finHtml(val);
+  return `<span class="dval">${val}</span>`;
+}
+
+let currentMonth = 'mar', currentTab = 'resumen';
+const empState = { feb:'C4', mar:'MBSA' };
+
+function switchMonth(m, el) {
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('month-' + m).classList.add('active');
+  currentMonth = m;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const tp = document.getElementById(m + '-' + currentTab);
+  if (tp) tp.classList.add('active');
+  if (currentTab === 'empresa') renderDetail(m, empState[m]);
+}
+
+function switchTab(t, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#month-' + currentMonth + ' .tab-panel').forEach(p => p.classList.remove('active'));
+  const tp = document.getElementById(currentMonth + '-' + t);
+  if (tp) tp.classList.add('active');
+  currentTab = t;
+  if (t === 'empresa') renderDetail(currentMonth, empState[currentMonth]);
+}
+
+function selEmp(month, emp, el) {
+  document.querySelectorAll('#' + month + '-emp-grid .emp-sel').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  empState[month] = emp;
+  renderDetail(month, emp);
+}
+
+function renderDetail(month, emp) {
+  const data = EMP_DATA[month][emp];
+  if (!data) return;
+  const container = document.getElementById(month + '-details');
+  const catLabels = { agro:'Agrícola', gan:'Ganadería', fin:'Financiero', tbo:'Tambo', oth:'Contexto' };
+  const items = Object.entries(FIELD_META)
+    .filter(([k]) => data[k] && data[k] !== '—' && data[k] !== '0')
+    .map(([k, meta]) => {
+      const val = renderVal(k, data[k]);
+      return `<div class="ditem"><div class="dlabel"><span class="pill ${meta.cat}">${catLabels[meta.cat]||meta.cat}</span>${meta.label}</div>${val}</div>`;
+    });
+  container.innerHTML = `
+    <div class="detail-hdr">
+      <div class="detail-ico">${data.ico}</div>
+      <div><div class="detail-nm">${emp}</div><div class="detail-dt">${data.fecha}</div></div>
+    </div>
+    <div class="detail-grid">${items.join('')}</div>`;
+}
+
+renderDetail('feb','C4');
+renderDetail('mar','MBSA');
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(headEl) {
+  const card = headEl.closest('.card');
+  const title = headEl.textContent.trim();
+  const body  = card.querySelector('.card-body, [style*="padding"]');
+
+  // clone inner content — use everything after the card-head
+  const clone = card.cloneNode(true);
+  clone.querySelector('.card-head').remove();
+
+  document.getElementById('modal-title').textContent = title;
+  // apply same color as original card-head
+  const mh = document.getElementById('modal-head');
+  mh.style.background = getComputedStyle(headEl).backgroundColor;
+  mh.style.color       = getComputedStyle(headEl).color;
+  document.getElementById('modal-body').innerHTML = clone.innerHTML;
+  document.getElementById('modal-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Attach click to all card-heads
+document.querySelectorAll('.card-head').forEach(h => {
+  h.addEventListener('click', () => openModal(h));
+});
+</script>
+</body>
+</html>
