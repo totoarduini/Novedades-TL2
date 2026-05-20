@@ -101,7 +101,8 @@ header p{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;}
 <div class="mbar">
   <button class="mbtn" onclick="setM('feb',this)">Febrero 2026 <span class="ct">11</span></button>
   <button class="mbtn" onclick="setM('mar',this)">Marzo 2026 <span class="ct">13</span></button>
-  <button class="mbtn on" onclick="setM('abr',this)">Abril 2026 <span class="ct">13</span></button>
+  <button class="mbtn" onclick="setM('abr',this)">Abril 2026 <span class="ct">13</span></button>
+  <button class="mbtn on" onclick="setM('may',this)">Mayo 2026 <span class="ct">11</span></button>
 </div>
 <div class="tbar">
   <button class="tbtn on" onclick="setT('res',this)"><span class="dot" style="background:#999"></span>Resumen</button>
@@ -125,11 +126,17 @@ header p{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;}
     <div class="tp" id="mar-tbo"></div><div class="tp" id="mar-fin"></div>
     <div class="tp" id="mar-inv"></div>
   </div>
-  <div class="mp on" id="mp-abr">
+  <div class="mp" id="mp-abr">
     <div class="tp on" id="abr-res"></div><div class="tp" id="abr-emp"></div>
     <div class="tp" id="abr-agr"></div><div class="tp" id="abr-gan"></div>
     <div class="tp" id="abr-tbo"></div><div class="tp" id="abr-fin"></div>
     <div class="tp" id="abr-inv"></div>
+  </div>
+  <div class="mp on" id="mp-may">
+    <div class="tp on" id="may-res"></div><div class="tp" id="may-emp"></div>
+    <div class="tp" id="may-agr"></div><div class="tp" id="may-gan"></div>
+    <div class="tp" id="may-tbo"></div><div class="tp" id="may-fin"></div>
+    <div class="tp" id="may-inv"></div>
   </div>
 </div>
 <div class="ov" id="ov" onclick="closeOv(event)">
@@ -184,7 +191,7 @@ function attach(el) {
 }
 
 // ── navigation ───────────────────────────────────────────────────────────────
-var CM = 'abr', CT = 'res';
+var CM = 'may', CT = 'res';
 function setM(m, btn) {
   document.querySelectorAll('.mbtn').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
@@ -333,12 +340,17 @@ function renderMonth(m) {
   }
 
   // Agrícola sections
+  // Month-specific section titles
+  var sectionOverride = d.sectionTitles || {};
   var agrSecs = [
-    {k:'gruesa',    icon:'🌻', title:'Gruesa 2025/26',        res:true, wide:true},
+    {k:'gruesa',    icon:'🌻', title: sectionOverride.gruesa || 'Gruesa 2025/26', res:true, wide:true},
+    {k:'cosecha',   icon:'🌱', title: sectionOverride.cosecha || 'Cosecha soja y maíz', res:true, wide:true},
     {k:'cosecha_soja', icon:'🌱', title:'Cosecha soja',       res:true, wide:true},
     {k:'cc',        icon:'🌾', title:'Cultivos de cobertura',  res:false},
     {k:'comercial', icon:'📊', title:'Comercialización',       res:true},
-    {k:'insumos',   icon:'🧪', title:'Insumos 2026/27',        res:false, wide:true},
+    {k:'insumos',   icon:'🧪', title: sectionOverride.insumos || 'Insumos 2026/27', res:false, wide:true},
+    {k:'fert',      icon:'🧪', title: sectionOverride.fert || 'Fertilización fina 2026', res:false},
+    {k:'agr_coment',icon:'📝', title: sectionOverride.agr_coment || 'Otros comentarios agrícolas', res:false},
     {k:'fina',      icon:'🌾', title:'Fina 2026 — superficie', res:true},
   ];
   agrSecs.forEach(function(s) {
@@ -766,10 +778,116 @@ DATA.abr = {
   {t:'Litros diarios totales', cols:['AL','LA','LP','C4'], rows:[[2021,17101,17144,75269,13684],[2022,17392,14008,71122,13873],[2023,20321,13194,86214,17709],[2024,22176,9496,87706,16692],[2025,23249,12500,102530,19083],[2026,null,15785,101628,19869]]},
  ],
 };
+DATA.may = {
+ empresas:['MBSA','LEL','OASA','GdA y Trap','IWSA','Lepoma','C4','EDS','SH','ENDSA','RyJLC'],
+ sectionTitles:{ gruesa:'Cosecha soja y maíz', insumos:'Insumos 2026/27 — compras', fert:'Fertilización fina 2026', agr_coment:'Comentarios agrícolas' },
+ temas:{
+  'MBSA':      {emp:'Vendiendo soja y maíz para comprar insumos y verdes, alquilamos para maní 930 en Córdoba'},
+  'LEL':       {emp:'Tuvimos una reducción importante en los campos que alquilábamos, 1066 ha menos de las cuales nuestras eran 416 ha. Motivos varios: alquileres que no nos da el número, propuestas no atractivas y pérdida por propuestas mejores a las nuestras. Nos gustaría encontrar por lo menos unas 300 ha buenas para alquilar, pero está muy difícil.', tec:'Estamos renegando con una voladura de unas lomas que habíamos sembrado con pastura. Estamos por resembrarlas con centeno y veremos el año que viene de hacer una resiembra.'},
+  'GdA y Trap':{inst:'Club de inversores Ángeles (¿en qué estamos?)'},
+  'Lepoma':    {emp:'Viene bajando la tasa.. ¿cómo vienen tomando financiaciones?', inst:'Me presenté en la mesa de asesores y fui a la reunión como vocal suplente. Hay discusión sobre los grupos de acción.. quieren poner un coordinador de empresas y está en discusión alguna otra cosa.. realmente no sé si hay que terminar de velar al de empresas, es una discusión abierta..'},
+  'C4':        {emp:'¿Cómo piensan encarar la financiación de la campaña? ¿Qué están viendo?\nAgroactiva — ¿alguno tiene alguna novedad si habrá algo interesante para la compra de insumos?\n¿En qué quedó lo de AZ Group lo de hacer algo más particular por empresas?', otro:'Mucha gente llamando por trabajo, gente desocupada y tirada.'},
+  'EDS':       {emp:'Estamos cerrando y vence el plazo para presentar EECC. ¿Están dando quebranto o una mínima ganancia?', tec:'¿Comer o no el rastrojo de maíz con la vaca?'},
+  'SH':        {emp:'Retenciones: ¿qué ven/piensan?'},
+  'ENDSA':     {tec:'Posiblemente bajemos Maíz 26/27, en pos de Gira y Soja... viéndolo.\nMantenemos siembra de trigo original planteada sobre antecesor Maní.'},
+  'RyJLC':     {otro:'Comentario de intimación de ARBA x actualización de construcciones nuevas sin declarar'},
+ },
+ cosecha:{
+  'MBSA':      'Soja bien, promedio cerca de 4. Maíz poco cosechado bien con problemas de caída, 2da fecha con 20% hum',
+  'LEL':       'Soja primera: nos queda muy poquito, unas 25 ha de campo alquilado. Llevamos de promedio 401 ha con un rinde promedio de 4231 kg/ha. Soja 2da: terminamos 163 ha, rinde promedio 3190 kg/ha. Maíz temprano: no terminamos pero venimos con muy buenos rendimientos en la Huella y en La Estrella con 12 mil kg promedio y en campos alquilados más flojos de 6 tn/ha.',
+  'OASA':      'Soja finaliza 4050 Kg / 213 hectáreas\nMaíz 1° 25% de avance, 10000 Kg',
+  'GdA y Trap':'Soja primera y segunda:\nTrapalcó finalizada — Soja 1era 38.7 qq/ha y soja 2da 34.9 qq/ha\nGolpe de Agua — Soja 1era 45.2 qq/ha y soja 2da 30.0 qq/ha (faltan unas 40 ha)\nMaíz temprano:\nTrapalcó: 67 qq/ha\nGolpe de Agua: sólo se cosecharon 120 ton para el feedlot, 300 ha sin cosechar',
+  'IWSA':      'Soja 1: 100% cosechado. Rinde 3.375\nSoja 2: 100% cosechado. Rinde 3.520\nMaíz: pendiente cosecha',
+  'Lepoma':    'Terminamos toda la de primera.. arriba de 4.1. El maíz de primera nos quedó por la mitad.. unos 9 Tons',
+  'C4':        'Soja 90% cosechado, 4000 kgs.\nMaíz arrancando',
+  'EDS':       'Arrendamiento, 4.100 la soja',
+  'SH':        'Mz Temp cosechado: 97 qq\nSoja Temprana: 44 qq y Soja Tardía: 39 qq\nSoja 2°: 39 qq',
+  'ENDSA':     'Soja terminada. Resta cálculo final, aprox 4030 kilos sobre antecesor verdeo y antecesor maíz.\nMaíz primera terminado. Resta cálculo final entre 8700 y 9100 el promedio, sobre ant soja y verdeo de invierno.',
+  'RyJLC':     'Mz primera (640 ha, 78%): 12 tn húmedo y 10 tn seco\nMz tardío y de segunda (300 ha, 17%): 10 tn húmedo y 8.7 tn/ha seco\nSoja primera y segunda (2400 ha, 78%): rinde de 4 tn',
+ },
+ comercial:{
+  'MBSA':      '60% gsol, 15% soja, 12% maíz. Vamos a seguir vendiendo',
+  'LEL':       'Vendimos maíz de los campos que teníamos alquilado, los dos negocios con Cargill un total de 1300 tn.',
+  'OASA':      'Girasol 100% vendido y cobrado\nSoja 14% vendido 310 u$s\nMaíz 30% vendido 180 u$s',
+  'GdA y Trap':'Golpe de Agua: Girasol 80% vendido a 380 U$S/ton. Soja 50% a 310 U$S/ton\nTrapalcó: Girasol 80% a 386 U$S/ton. Soja 50% a 310 U$S/ton',
+  'IWSA':      'Soja: vendido 40%',
+  'Lepoma':    '60% de la soja hasta el momento',
+  'C4':        '85% Trigo - 60% Girasol - 0% Cebada - 0% Maíz - 50% Soja',
+  'SH':        'Trigo Dic BB: 60 tns 236 dlrs\nSoja: 150 tns fijadas a 315 dlrs BB. Resto a fijar\nMz: a cumplir 210 tn a 185 dlrs ACA. Resto vendido dispo a 200 dlrs cosecha',
+  'ENDSA':     'Soja aprox 40%. Maíz aprox 35%. Girasol 100%',
+  'RyJLC':     '70% girasol vendido. 32% soja vendida o canjeada. 70% maíz vendido o consumo',
+ },
+ insumos:{
+  'MBSA':      'Semilla de maíz y gsol, no todo',
+  'LEL':       'Compramos la semilla de maíz: gran parte de Dekalb, otro poco de Advanta y resto Supra. También algo de girasol alto oleico de Syngenta y estamos por cerrar algo de girasol BAHF y resto Syngenta, ya tenía Advanta que me había sobrado.',
+  'OASA':      'Urea para verdeos',
+  'GdA y Trap':'Solo glifosato y dual gold para ambas empresas. A grandes rasgos el 80%. Falta ferti para la gruesa',
+  'IWSA':      'Compramos aprox 50% de la semilla maíz\nAprox 20% agroquímicos a utilizar',
+  'Lepoma':    'Creo que cerca del 90% sin contar fertilizantes...',
+  'C4':        'Químicos: 1/3 del presupuesto con soja disponible.\nFerti con Agronación al 2.75%\nSemilla: nada por ahora',
+  'RyJLC':     'No se compró más nada',
+ },
+ fert:{
+  'LEL':       'MAP, usamos Microessential a la siembra y urea luego. No vamos a reducir. Teníamos urea comprada barata.',
+  'GdA y Trap':'En ambas empresas mezcla 7.40. En Golpe de Agua los lotes de fina fueron con Azufertil aplicado por Nutrien. Urea según análisis',
+  'IWSA':      'Verdeos: 60 Kg Map\nAlfalfa: 80 Kg Arrancador\nTriticale: 90 Kg Arrancador\nCobertura: Sin Fert\nCebada: 85 Kg Arrancador. Reducimos nitrogenada\nTrigo: 85 Kg Arrancador. Reducimos nitrogenada.',
+  'Lepoma':    'Urea',
+  'C4':        'Microessentials S9',
+  'SH':        'Mezcla 7-40-0-5',
+  'RyJLC':     'La mayoría M S9, salvo algunos lotes con bosta que van con MAP',
+ },
+ agr_coment:{
+  'Lepoma':    'Estamos en el medio de la cosecha.. y estamos con algún problema leve de piso.. la verdad que estamos con lo justito',
+  'SH':        'Sembrando/probando crestas de loma en rastrojo soja con:\nVicia (20 kg) con Centeno (3 kg)\nCenteno (55 kg)\nFertilizado con mezcla 7-40-0-5: 120 kg y 60 kg respectivamente',
+ },
+ cyv:{
+  'LEL':       {c:'Se compraron 127 vacas preñadas. Precio 2,9 millones de tercera y cuarta parición y 3 millones la de 2da parición. Se pagó parte con crédito del Galicia en dólares y parte con cheques.'},
+  'OASA':      {c:'Para Salta vacas vacías 360 Kg a 2550 pesos. Vacas preñadas 1.800.000. 250 total por ganancias'},
+  'GdA y Trap':{v:'Trapalcó MAG: Vaquillonas de 320 a 330 kg a 5.170 $/kg y Ntos de 370 a 5.000 $/kg'},
+  'EDS':       {v:'Ternero, 65 cab, a 6.500 $/kg. 220 Kg prom.'},
+  'SH':        {v:'Novillo. 36 cab — 440 kg $7500 la carne. 58%'},
+  'ENDSA':     {c:'Para La Pampa: 600 ts m y h 70/30 — 6100/6250 con 180 kilos. Están entrando disparejos pero en general más livianos.\nMuevo unos 250 propios.\nNo creo que llegue a comprar y mantener más de 850. Próximo paso si puedo 1000 pero dependo de guita.\nPara Gerla: Solo vaca CUT preñada, en promedio de 1.650.000 (1.6 a 1.7).\nPara Salta: Terminando de ingresar terneros/as para llegar a 1500 que es el objetivo. Promedio de compra de los últimos 700: $5600, lo anterior estaba en 5800 así que calculo terminaré en 5700 el promedio.', v:'Próximamente arranco con la vaca de venta SALTA.\nTerminando la capitalización 25/26...debo vender el producto que me queda esta semana.'},
+  'RyJLC':     {c:'Vac cut 1.700.000', v:'Nov ha. 3200\nNtos mz 5350\nVaq. mz. 5300\nVac mz 3700\nVac ha cons 2100-2200\nVac ha gorda 2900-3000'},
+ },
+ tbo_nov:{
+  'C4':   'Mejorando en mayo sin barro.\nYa estamos ordeñando doble 20 y empezando a colocar los pisos de goma.',
+  'RyJLC':'El peor abril de los últimos 7 años: barro, calecita, Ayelen y demás. Es lógico por lo buen año agrícola que fue!\nImpresionante producción de pasto y silos.\nBuenos y abundantes bunkers de grano húmedo para todo el año',
+ },
+ fin:{
+  'MBSA':      {sit:'Buena', fin:'Nada, contado canje', cls:'ok'},
+  'LEL':       {sit:'Buena', fin:'Se toma un crédito en el Nación para cambiar un tractor al 3,5% en dólares a 4 años', cls:'ok'},
+  'OASA':      {sit:'Buena', cls:'ok'},
+  'GdA y Trap':{sit:'Golpe de Agua: ordenándose\nTrapalcó: en vías de ordenarse, pagando varias cuentas tomadas por cierre de balance', fin:'Golpe de Agua: crédito BNA en U$S para compra del campo en La Pampa\nNera para insumos a 360 días\nTrapalcó: Procampo digital a 360 días también tasa cero', cls:'rg'},
+  'IWSA':      {sit:'De a momentos un poco justo, pero OK', fin:'Tarjeta BNA para agroquímicos', cls:'rg'},
+  'Lepoma':    {sit:'Buena', fin:'Lo que se compró de la nera.. tengo ganas de cambiar alguna maquinaria ahora en la agroactiva..', cls:'ok'},
+  'C4':        {sit:'Bien', fin:'Agronación 2.75% en U$', cls:'ok'},
+  'EDS':       {sit:'Tenemos 80 Mil USD de capital de trabajo y nos quedan dos cuotas de prendario (30 mil en total)', fin:'USD 7%. No tenemos intención de tomar más crédito.', cls:'ok'},
+  'SH':        {sit:'Ajustada', fin:'Ninguna', cls:'rg'},
+  'ENDSA':     {sit:'Óptima pero justa, hasta que empiece a sacar la hacienda encerrada (900 vacas). La hacienda del 26/27 en Gerla ya está toda comprada.\nLa compra del campo con gastos y chimichurris me llevó 810 mil dólares taca/taca, pero muy contento, estuvimos con la familia.', fin:'Descuento de cheques cortos 24 TNA, pagando créditos viejos en dólares. Viendo si necesito retomarlos más adelante.', cls:'ok'},
+  'RyJLC':     {sit:'Justa por poca venta de cereal y pocos litros de leche', cls:'rg'},
+ },
+ inver:{
+  'LEL':       'Se concretó el crédito del tractor, se compró un New Holland 380 para cambiar por el Puma 230. Terminamos comprando uno un poco más grande por la bomba hidráulica.',
+  'OASA':      'Compra de campo lindero a Huelen, 120 hectáreas (30% agrícola, 70% ganadero)\nBoleto: 30.000 dólares\n110.000 dólares — 3/8/26\n120.000 dólares — 15/4/27\n\nCierre de alquiler trigo soja sobre 475 hectáreas de maní (fecha siembra hasta 15/7/26, si hay atraso en cosecha de maní pasa a soja al mismo precio)\nY 240 hectáreas de Don Leopoldo se repite trigo soja. Todo 16 QQ.\nResto de superficie agrícola: evaluando administración vs arrendamiento',
+  'GdA y Trap':'Trapalcó SA: se confirmó la compra de la extrusora y se hace un galpón pegada a la planta de silos para ubicarla (también se pagó el 50% de la misma)\nGolpe de Agua: compra de 2.500 ha en La Pampa a 30 km de Quehué',
+  'Lepoma':    'Para cuando veamos esto, habré firmado el boleto de otra chacra en Magaño.. si todo sale bien llegamos a las 360 totales entre las tres.. Comprar todos esos puchos es medio kilombo.. Debo haber hecho más boletos y escrituras de los que pensaba.. El mercado de tierras está con movida..\n\n1. Charlando entre nosotros cómo ordenarnos para el mayo del 27.. la estrategia era no hacer nada y esperar tranquilos el pase político de mayo a octubre.. pero las cagadas del 27, las arrancamos en el 26.. ¿cómo la ven?..\n2. Vamos a comprar unas vacas para San Blas, onda no pagar ganancias.. todo a ciegas.\n3. Sobre los comentarios de Rosendo de los empleados, sobre una base de 12: uno solo estaba en categoría 5, 2 en categoría 2 y el resto en 1.\n4. Compré unos contenedores para el campo: dos de seis metros, unos 5740 dólares con boleta con IVA del 10.5%',
+  'C4':        'Pisos de goma en el tambo',
+  'EDS':       'Refacción puesto y matera. Compramos desmalezadora y vamos a comprar una rastra 3 puntos. Seguimos alambrado.',
+  'ENDSA':     'Terminando de armar La Pampa. Ahora necesito una balanza nueva y lector porque estaba feo eso.. luego armando todo según lo informado en los últimos 2 meses.',
+  'RyJLC':     'Carretón para retro y reemplazo de tractores',
+ },
+ datos:[
+  {t:'Lt / VO / día', cols:['AL','LA','LP','C4'], rows:[[2021,29.5,30.5,37.2,30.0],[2022,28.1,28.3,39.1,32.7],[2023,29.5,26.9,40.8,32.9],[2024,28.8,28.6,38.9,32.1],[2025,29.3,32.0,38.1,37.6],[2026,null,30.0,35.5,34.7]]},
+  {t:'Vacas en ordeñe (VO)', cols:['AL','LA','LP','C4'], rows:[[2021,653,554,2117,458],[2022,681,501,2046,455],[2023,773,466,2362,556],[2024,792,359,2435,542],[2025,820,409,2887,557],[2026,null,472,2930,559]]},
+  {t:'Litros diarios totales', cols:['AL','LA','LP','C4'], rows:[[2021,19264,16890,78752,13605],[2022,19102,14206,79940,14888],[2023,22797,12478,96259,18291],[2024,22828,10281,94779,17250],[2025,24011,13142,110080,20924],[2026,null,14160,103871,19374]]},
+ ],
+};
+
 // ── INIT ─────────────────────────────────────────────────────────────────────
 renderMonth('feb');
 renderMonth('mar');
 renderMonth('abr');
+renderMonth('may');
 </script>
 </body>
 </html>
